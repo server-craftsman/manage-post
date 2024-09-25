@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+} 
+
+.header-link {
+  @apply flex items-center text-gray-700 px-4 py-2 rounded-md transition-all duration-200;
+}
+
+.header-link:hover {
+  @apply bg-gray-800 text-white rounded-lg shadow-md;
+}
+
+.header-link:active {
+  @apply bg-gray-700 text-white rounded-lg shadow-md;
+}
+
+.icon-admin {
+  @apply inline w-4 h-4 mr-2
+}
+
+.filter-button {
+  @apply bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl;
+}
+
+.filter-button:hover {
+  @apply bg-gradient-to-r from-purple-700 to-indigo-800;
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 14px; /* Adjust font size for mobile */
+    line-height: 1.5; /* Improve readability on mobile */
+  }
+
+  .header-link {
+    @apply px-2 py-1; /* Adjust padding for mobile */
+    @apply text-sm; /* Set text size for header links on mobile */
+  }
+
+  h1 {
+    font-size: 1.5rem; /* Adjust heading size for mobile */
+    @apply text-center; /* Center align heading on mobile */
+  }
+
+  p {
+    font-size: 0.875rem; /* Adjust paragraph size for mobile */
+    @apply text-gray-600; /* Change paragraph text color for better contrast */
+  }
+
+  /* Additional styles for mobile */
+  .container {
+    @apply px-2; /* Reduce container padding on mobile */
+  }
+
+  button {
+    @apply w-full; /* Make buttons full width on mobile */
+    @apply py-2; /* Increase button padding for better touch targets */
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 641px) {
+  body {
+    font-size: 16px; /* Adjust font size for tablet */
+    line-height: 1.6; /* Improve readability on tablet */
+  }
+
+  .header-link {
+    @apply px-3 py-1.5; /* Adjust padding for tablet */
+    @apply text-base; /* Set text size for header links on tablet */
+  }
+
+  h1 {
+    font-size: 2rem; /* Adjust heading size for tablet */
+    @apply text-center; /* Center align heading on tablet */
+  }
+
+  p {
+    font-size: 1rem; /* Adjust paragraph size for tablet */
+    @apply text-gray-700; /* Change paragraph text color for better contrast */
+  }
+
+  /* Additional styles for tablet */
+  .container {
+    @apply px-4; /* Adjust container padding on tablet */
+  }
+
+  button {
+    @apply w-auto; /* Adjust button width for tablet */
+    @apply py-2.5; /* Adjust button padding for better touch targets */
+  }
+}
