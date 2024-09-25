@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
  import React from 'react'
-//  import AdminLayout from './layout/admin/AdminLayout';
+ import AdminLayout from './layout/admin/AdminLayout';
  import CustomerLayout from './layout/customer/CustomerLayout';
  import Home from './pages/customers/Home';
-//  import Dashboard from './pages/admin/Dashboard';
+ import Login from './pages/Login';
+ import Dashboard from './pages/admin/Dashboard';
  import { AuthProvider } from './context/AuthContext';
  const App: React.FC = () => {
   const router = createBrowserRouter([
@@ -14,19 +15,23 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
         {
           index: true,
           element: <Home />,
+        }
+      ],
+    },
+    {
+      path: '/login',
+      element: <Login />,
+    },
+    {
+      path: '/admin',
+      element: <AdminLayout />,
+      children: [
+        {
+          path: 'dashboard',
+          element: <Dashboard />,
         },
       ],
     },
-    // {
-    //   path: '/admin',
-    //   element: <AdminLayout />,
-    //   children: [
-    //     {
-    //       path: '/dashboard',
-    //       element: <Dashboard />,
-    //     },
-    //   ],
-    // },
   ])
    return (
        <AuthProvider>
@@ -36,4 +41,3 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
  }
  
  export default App
- 

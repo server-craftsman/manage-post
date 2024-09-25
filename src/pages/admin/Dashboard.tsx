@@ -1,10 +1,26 @@
+import { useAuth } from "../../context/AuthContext";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.role !== 'admin' && user.role !== 'customer') {
+      navigate('/unauthorized'); // Redirect to an unauthorized page
+    }
+  }, [user, navigate]);
+
+  if (!user) {
+    return <p>Loading...</p>; // Or a loading spinner
+  }
+
   return (
     <div>
-      <h1>Dashboard</h1>
+      
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
