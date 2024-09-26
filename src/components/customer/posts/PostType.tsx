@@ -7,9 +7,8 @@ interface PostTypeProps {
 }
 
 const PostType: React.FC<PostTypeProps> = ({ post }) => {
-  // Kiểm tra xem createdAt và updatedAt có phải là đối tượng Date không
-  const createdAt = post.createdAt instanceof Date ? post.createdAt : new Date(post.createdAt);
-  const updatedAt = post.updatedAt instanceof Date ? post.updatedAt : new Date(post.updatedAt);
+  const createdAt = new Date(post.createDate);
+  const updatedAt = new Date(post.updateDate);
 
   return (
     <div>

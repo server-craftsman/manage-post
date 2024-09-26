@@ -4,7 +4,7 @@ export interface IPost {
     title: string;
     description: string;
     status: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createDate: Date;
+    updateDate: Date;
     postImage: string;
 }
