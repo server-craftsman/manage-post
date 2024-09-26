@@ -13,6 +13,7 @@ const contentStyle: CSSProperties = {
   height: '500px',
   width: '100%',
   objectFit: 'cover',
+  position: 'relative',
 };
 
 const Cover: React.FC = () => {
@@ -20,7 +21,8 @@ const Cover: React.FC = () => {
     <div>
       <Carousel
         arrows
-        infinite={false}
+        infinite={true}
+        autoplay={true}
       >
         <div>
           <img src={image1} alt="Slide 1" style={contentStyle} />
@@ -32,8 +34,8 @@ const Cover: React.FC = () => {
           <img src={image3} alt="Slide 3" style={contentStyle} />
         </div>
         <div>
-            <img src={image4} alt="Slide 4" style={contentStyle} />
-          </div>
+          <img src={image4} alt="Slide 4" style={contentStyle} />
+        </div>
       </Carousel>
     </div>
   );

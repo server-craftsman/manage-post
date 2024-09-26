@@ -37,3 +37,12 @@ export const register = async (username: string, email: string, password: string
     throw new Error('Failed to register user');
   }
 };
+
+export const getAllUsers = async (): Promise<IUser[]> => {
+  try {
+    const response = await axios.get<IUser[]>(API_URL); // Use axios instance
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch users');
+  }
+};
