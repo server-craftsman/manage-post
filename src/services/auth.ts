@@ -46,6 +46,18 @@ export const getAllUsers = async (): Promise<IUser[]> => {
   }
 };
 
+export const getUserById = async (id: string): Promise<IUser> => {
+  const response = await axios.get<IUser>(`${API_URL}/${id}`);
+  if (!response.data) {
+    throw new Error('Failed to fetch user');
+  }
+  return response.data;
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await axios.delete(`${API_URL}/${id}`);
+};
+
 export const updateUser = async (userData: IUser): Promise<IUser> => {
   const response = await axios.put(`/api/users/${userData.id}`, userData);
   return response.data;

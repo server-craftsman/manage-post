@@ -13,7 +13,7 @@ import PostList from './components/customer/posts/PostList';
 import ManageUsers from './pages/admin/ManageUsers';
 import UserDetail from './components/admin/UserDetail';
 
-import CustomerProfile from './components/customer/profile/CustomerProfile';
+import CustomerProfile from './components/customer/profile/Customerprofile';
 import ManagePost from './pages/admin/ManagePost';
 import PostDetails from './components/admin/PostDetails';
 // Set up axios interceptor
