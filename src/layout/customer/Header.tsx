@@ -27,7 +27,7 @@ const Header = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
-            <div className="absolute hidden group-hover:block bg-white shadow-lg mt-1 rounded-md z-50">
+            <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-md z-50">
               <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Product 1</a>
               <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Product 2</a>
             </div>
@@ -39,7 +39,7 @@ const Header = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
-            <div className="absolute hidden group-hover:block bg-white shadow-lg mt-1 rounded-md z-50">
+            <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-md z-50">
               <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Resource 1</a>
               <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Resource 2</a>
             </div>
