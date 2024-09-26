@@ -58,7 +58,7 @@ const PostDetail: React.FC = () => {
       <br />
       <Text type="secondary" style={style}>Updated At: {formatDate(updatedAt)}</Text>
       <br />
-      <Link to="/posts">
+      <Link to="/">
         <Button type="primary" icon={<ArrowLeftOutlined />} style={{ marginTop: 20, fontFamily: 'Poppins, sans-serif', backgroundColor: '#1890ff', borderColor: '#1890ff', borderRadius: '5px' }}>Back to Posts</Button>
       </Link>
     </Card>

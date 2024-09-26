@@ -38,6 +38,9 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
 
   return (
     <Row gutter={[16, 16]}>
+      <Col span={24}>
+        <h2 style={{ fontFamily: 'pop, serif', textAlign: 'center', marginBottom: '20px', fontSize: '36px', fontWeight: 'bold', color: '#d4af37', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>Posts</h2>
+      </Col>
       {posts.map(post => (
         <Col key={post.id} span={8}>
           <PostType post={post} />
