@@ -5,7 +5,7 @@ import { IUser } from "../../../models/Users";
 import { UploadOutlined } from '@ant-design/icons';
 
 const CustomerProfile: React.FC = () => {
-  const { user, updateUser } = useAuth(); // Assuming you have an updateUser function in your context
+  const { user, updateUser } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [form] = Form.useForm();
