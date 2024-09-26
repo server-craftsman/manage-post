@@ -10,6 +10,8 @@ import axios from 'axios';
 import PostDetail from './components/customer/posts/PostDetail';
 import PostList from './components/customer/posts/PostList';
 import Customerprofile from './components/customer/profile/Customerprofile';
+import ManageUsers from './pages/admin/ManageUsers';
+import UserDetail from './components/admin/UserDetail';
 
 // Set up axios interceptor
 axios.interceptors.request.use(
@@ -70,8 +72,17 @@ const App: React.FC = () => {
           path: 'dashboard',
           element: <Dashboard />,
         },
+        {
+          path: 'users',
+          element: <ManageUsers/>
+        },
+        {
+          path: 'detail/:id',
+          element: <UserDetail />,
+        }
       ],
     },
+
   ]);
 
   return (

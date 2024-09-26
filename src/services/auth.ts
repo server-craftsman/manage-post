@@ -45,9 +45,9 @@ export const getAllUsers = async (): Promise<IUser[]> => {
   } catch (error) {
     throw new Error('Failed to fetch users');
   }
+};
 
 export const updateUser = async (userData: IUser): Promise<IUser> => {
   const response = await axios.put(`/api/users/${userData.id}`, userData);
   return response.data;
-
 };

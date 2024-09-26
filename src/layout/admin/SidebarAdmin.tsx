@@ -8,7 +8,7 @@ import {
   OrderedListOutlined,
   FundOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 const { Sider } = Layout;
 import { useAuth } from '../../context/AuthContext';
 const Navbar: React.FC = () => {
@@ -34,9 +34,11 @@ const Navbar: React.FC = () => {
         <Menu.Item key="2" icon={<FundOutlined style={{ color: '#000000' }} />}>
           Overview
         </Menu.Item>
+        <Link to="/admin/users">
         <Menu.Item key="3" icon={<TeamOutlined style={{ color: '#000000' }} />}>
           Users
         </Menu.Item>
+        </Link>
         <Menu.Item key="4" icon={<OrderedListOutlined style={{ color: '#000000' }} />}>
           Posts
         </Menu.Item>
