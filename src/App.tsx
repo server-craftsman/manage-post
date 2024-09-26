@@ -1,12 +1,37 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
- import React from 'react'
- import AdminLayout from './layout/admin/AdminLayout';
- import CustomerLayout from './layout/customer/CustomerLayout';
- import Home from './pages/customers/Home';
- import Login from './pages/Login';
- import Dashboard from './pages/admin/Dashboard';
- import { AuthProvider } from './context/AuthContext';
- const App: React.FC = () => {
+import React from 'react';
+import AdminLayout from './layout/admin/AdminLayout';
+import CustomerLayout from './layout/customer/CustomerLayout';
+import Home from './pages/customers/Home';
+import Login from './pages/Login';
+import Dashboard from './pages/admin/Dashboard';
+import { AuthProvider } from './context/AuthContext';
+import axios from 'axios';
+
+// Set up axios interceptor
+axios.interceptors.request.use(
+  config => {
+    // Add any request interceptors here
+    console.log('Request Interceptor', config);
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+axios.interceptors.response.use(
+  response => {
+    // Add any response interceptors here
+    console.log('Response Interceptor', response);
+    return response;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+const App: React.FC = () => {
   const router = createBrowserRouter([
     {
       path: '/',
@@ -32,12 +57,13 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
         },
       ],
     },
-  ])
-   return (
-       <AuthProvider>
-         <RouterProvider router={router} />
-       </AuthProvider>
-   )
- }
- 
- export default App
+  ]);
+
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
+};
+
+export default App;

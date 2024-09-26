@@ -1,8 +1,8 @@
-
+import PostList from "../../components/customer/posts/PostList";
 const Home = () => {
   return (
     <div>
-      Hello World
+      <PostList />
     </div>
   )
 }
