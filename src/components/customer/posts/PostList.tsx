@@ -43,7 +43,7 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin tip="Loading..." />
+        <Spin />
       </div>
     );
   }

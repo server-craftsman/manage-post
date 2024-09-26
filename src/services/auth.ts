@@ -17,30 +17,42 @@ export const login = async (email: string, password: string): Promise<IUser> => 
 };
 
 export const logout = async (): Promise<void> => {
-  // No network request needed for logout
   localStorage.removeItem('user'); // Remove user data from local storage
 };
 
 export const register = async (name: string, email: string, password: string, avatar: File, role: string, createDate: Date, updateDate: Date): Promise<IUser> => {
   try {
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('role', role);
-    formData.append('createDate', createDate.toISOString());
-    formData.append('updateDate', updateDate.toISOString());
-    formData.append('avatar', avatar);
+    const reader = new FileReader();
+    const avatarBase64 = await new Promise<string>((resolve, reject) => {
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(avatar);
+    });
 
-    const response = await axios.post<IUser>(API_URL, formData, {
+    const userData = {
+      name,
+      email,
+      password,
+      role,
+      createDate: createDate.toISOString(),
+      updateDate: updateDate.toISOString(),
+      avatar: avatarBase64
+    };
+
+    const response = await axios.post<IUser>(API_URL, userData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 413) {
-      throw new Error('Payload Too Large');
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 413) {
+        throw new Error('Payload Too Large');
+      } else if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
     }
     throw new Error('Failed to register user');
   }

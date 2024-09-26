@@ -53,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await authService.logout();
       setUser(null);
+      localStorage.removeItem('user');
     } catch (error) {
       setError('Failed to log out');
     }
@@ -90,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user: user ?? null, login, logout, register, updateUser, error: error ?? undefined }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined }}>
       {children}
     </AuthContext.Provider>
   );

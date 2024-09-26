@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/customer/Searchbar';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar, Button, Dropdown, Menu, Layout } from 'antd';
-import { DownOutlined, UserOutlined, LogoutOutlined, EditOutlined } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined, EditOutlined } from '@ant-design/icons';
 import { IPost } from '../../models/Posts';
 import { fetchPosts } from '../../services/posts';
-
+import type { MenuProps } from 'antd';
 const { Header } = Layout;
 
 const CustomHeader = () => {
@@ -14,7 +14,6 @@ const CustomHeader = () => {
   const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState<IPost[]>([]);
   const [allPosts, setAllPosts] = useState<IPost[]>([]);
-  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -41,16 +40,19 @@ const CustomHeader = () => {
     }
   }, []);
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="profile" icon={<UserOutlined />}>
-        <Link to="/profile">Profile</Link>
-      </Menu.Item>
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Log out
-      </Menu.Item>
-    </Menu>
-  );
+  const menuItems: MenuProps['items'] = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: <Link to="/profile">Profile</Link>,
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Log out',
+      onClick: handleLogout,
+    },
+  ];
 
   return (
     <Header style={{ backgroundColor: 'white', boxShadow: '0 2px 8px #f0f1f2' }}>
@@ -65,33 +67,33 @@ const CustomHeader = () => {
         <SearchBar onSearch={handleSearch} placeholder="Search..." searchResults={searchResults} onResultClick={handleResultClick} />
         <nav style={{ display: 'flex', alignItems: 'center' }}>
           <Link to="/" style={{ marginRight: '16px' }}>Home</Link>
-          <Dropdown overlay={
+          {/* <Dropdown menu={(
             <Menu>
               <Menu.Item key="product1">Product 1</Menu.Item>
               <Menu.Item key="product2">Product 2</Menu.Item>
             </Menu>
-          }>
+          )}>
             <Button type="link" ref={dropdownRef}>
               Products <DownOutlined />
             </Button>
           </Dropdown>
-          <Dropdown overlay={
+          <Dropdown menu={(
             <Menu>
               <Menu.Item key="resource1">Resource 1</Menu.Item>
               <Menu.Item key="resource2">Resource 2</Menu.Item>
             </Menu>
-          }>
+          )}>
             <Button type="link" ref={dropdownRef}>
               Resources <DownOutlined />
             </Button>
-          </Dropdown>
+          </Dropdown> */}
           <Link to="/posts" style={{ marginLeft: '16px' }}>
             <Button type="link" icon={<EditOutlined />}>Write</Button>
           </Link>
         </nav>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {user ? (
-            <Dropdown overlay={menu} trigger={['click']}>
+            <Dropdown menu={{ items: menuItems }} trigger={['click']}>
               <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                 <Avatar src={typeof user.avatar === 'string' ? user.avatar : 'default-avatar.png'} size={40} style={{ marginRight: '8px' }} />
                 <span style={{ fontWeight: 'bold', color: '#000' }}>{user.name}</span>
