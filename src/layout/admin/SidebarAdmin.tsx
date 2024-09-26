@@ -1,12 +1,12 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import {
-  UserOutlined,
-  LaptopOutlined,
   NotificationOutlined,
-  HomeOutlined,
   SettingOutlined,
   LogoutOutlined,
+  TeamOutlined,
+  OrderedListOutlined,
+  FundOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 const { Sider } = Layout;
@@ -30,22 +30,20 @@ const Navbar: React.FC = () => {
         defaultSelectedKeys={['1']}
         style={{ background: '#ffffff', color: '#000000', borderRight: 0 }}
       >
-        <Menu.Item key="1" icon={<HomeOutlined style={{ color: '#000000' }} />}>
-          Home
+        
+        <Menu.Item key="2" icon={<FundOutlined style={{ color: '#000000' }} />}>
+          Overview
         </Menu.Item>
-        <Menu.Item key="2" icon={<UserOutlined style={{ color: '#000000' }} />}>
-          Dashboard
-        </Menu.Item>
-        <Menu.Item key="3" icon={<LaptopOutlined style={{ color: '#000000' }} />}>
+        <Menu.Item key="3" icon={<TeamOutlined style={{ color: '#000000' }} />}>
           Users
         </Menu.Item>
-        <Menu.Item key="4" icon={<NotificationOutlined style={{ color: '#000000' }} />}>
+        <Menu.Item key="4" icon={<OrderedListOutlined style={{ color: '#000000' }} />}>
+          Posts
+        </Menu.Item>
+        <Menu.Item key="5" icon={<NotificationOutlined style={{ color: '#000000' }} />}>
           Notifications
         </Menu.Item>
-        <Menu.Item key="5" icon={<SettingOutlined style={{ color: '#000000' }} />}>
-          Settings
-        </Menu.Item>
-        <Menu.Item key="6" icon={<LogoutOutlined style={{ color: '#000000' }} />}>
+        <Menu.Item key="7" icon={<LogoutOutlined style={{ color: '#000000' }} />}>
           <span onClick={handleLogout}>Logout</span>
         </Menu.Item>
       </Menu>

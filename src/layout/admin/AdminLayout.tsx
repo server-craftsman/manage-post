@@ -12,10 +12,10 @@ const AdminLayout = () => {
     <Layout style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
       <Navbar />
       <Layout>
-        <Header style={{ background: '#ffffff', padding: '0 20px', borderBottom: '1px solid #d9d9d9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Header style={{ background: '#1a1a1a', padding: '0 30px', borderBottom: '2px solid #ffd700', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <img src={user?.avatar} alt="User Avatar" style={{ borderRadius: '50%', width: '40px', height: '40px', marginRight: '10px' }} />
-            <Title level={2} style={{ color: '#000000', margin: 0 }}>
+            <img src={user?.avatar} alt="User Avatar" style={{ borderRadius: '50%', width: '50px', height: '50px', marginRight: '15px', border: '2px solid #ffd700' }} />
+            <Title level={2} style={{ color: '#ffd700', margin: 0, fontWeight: 'bold' }}>
               Welcome, {user?.name}
             </Title>
           </div>
