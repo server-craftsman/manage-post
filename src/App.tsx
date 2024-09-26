@@ -13,9 +13,9 @@ import PostList from './components/customer/posts/PostList';
 import Unauthorized from './pages/errors/Unauthorized';
 import ManageUsers from './pages/admin/ManageUsers';
 import UserDetail from './components/admin/UserDetail';
-import CustomerProfile from './components/customer/profile/CustomerProfile'; // Updated casing
 import ManagePost from './pages/admin/ManagePost';
 import PostDetails from './components/admin/PostDetails';
+import CustomerProfile from './components/customer/profile/CustomerProfile';
 
 // Set up axios interceptor
 axios.interceptors.request.use(
