@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IPost } from '../../models/Posts';
-import { deletePost, getAllPosts} from '../../services/posts';
+import { getAllPosts} from '../../services/posts';
 import { Table, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
@@ -51,7 +51,7 @@ const ManageBlogs: React.FC = () => {
           title="Actions"
           key="actions"
           className="py-2 px-4 border-b"
-          render={(text, post: IPost) => (
+          render={( post: IPost) => (
             <>
               
               <Button type="default" onClick={() => handleViewDetails(post.id.toString())}>View Details</Button>
