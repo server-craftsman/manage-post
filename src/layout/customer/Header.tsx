@@ -1,8 +1,8 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/customer/Searchbar';
 import { useAuth } from '../../context/AuthContext';
-import { Avatar, Button, Dropdown, Menu, Layout } from 'antd';
+import { Avatar, Button, Dropdown, Layout } from 'antd';
 import { UserOutlined, LogoutOutlined, EditOutlined } from '@ant-design/icons';
 import { IPost } from '../../models/Posts';
 import { fetchPosts } from '../../services/posts';

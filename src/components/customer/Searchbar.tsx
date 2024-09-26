@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Input, Dropdown, Menu } from 'antd';
+import { Input, Dropdown } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { IPost } from '../../models/Posts';
 interface SearchBarProps {
