@@ -124,7 +124,7 @@ const Register = () => {
                         };
                         reader.readAsDataURL(compressedFile);
                       },
-                      error: (err) => {
+                      error: () => {
                         message.error('Failed to compress image. Please try again.');
                       },
                     });

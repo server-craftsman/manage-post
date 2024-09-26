@@ -28,7 +28,6 @@ const CustomerProfile: React.FC = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      let avatar = user.avatar;
 
       if (avatarFile) {
         const formData = new FormData();

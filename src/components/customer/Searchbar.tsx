@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Input, Dropdown, Menu } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { IPost } from '../../models/Posts';
-import { Avatar } from 'antd';
 interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder: string;
