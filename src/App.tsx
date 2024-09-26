@@ -7,7 +7,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/admin/Dashboard';
 import { AuthProvider } from './context/AuthContext';
 import axios from 'axios';
-
+import PostDetail from './components/customer/posts/PostDetail';
+import PostList from './components/customer/posts/PostList';
 // Set up axios interceptor
 axios.interceptors.request.use(
   config => {
@@ -40,6 +41,14 @@ const App: React.FC = () => {
         {
           index: true,
           element: <Home />,
+        },
+        {
+          path: '/posts/:id',
+          element: <PostDetail />,
+        },
+        {
+          path: '/posts',
+          element: <PostList />,
         }
       ],
     },

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Spin, Alert, Row, Col } from 'antd'; // Import Ant Design components
 import { IPost } from '../../../models/Posts';
 import PostType from './PostType';
 import { fetchPosts } from '../../../services/posts';
@@ -16,7 +17,7 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
     const loadPosts = async () => {
       try {
         const fetchedPosts = await fetchPosts();
-        setPosts(fetchedPosts);
+        setPosts(fetchedPosts.filter(post => post.status === 'published'));
       } catch (err) {
         setError(err as string);
       } finally {
@@ -28,19 +29,21 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spin tip="Loading..." />;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <Alert message="Error" description={error} type="error" showIcon />;
   }
 
   return (
-    <div>
+    <Row gutter={[16, 16]}>
       {posts.map(post => (
-        <PostType key={post.id} post={post} />
+        <Col key={post.id} span={8}>
+          <PostType post={post} />
+        </Col>
       ))}
-    </div>
+    </Row>
   );
 }
 

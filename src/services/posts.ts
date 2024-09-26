@@ -9,3 +9,12 @@ export const fetchPosts = async (): Promise<IPost[]> => {
   }
   return response.data;
 };
+
+export const getPostById = async (id: string): Promise<IPost> => {
+  const response = await axios.get<IPost>(`${API_URL}/${id}`);
+  if (!response.data) {
+    throw new Error('Failed to fetch post');
+  }
+  return response.data;
+};
+
