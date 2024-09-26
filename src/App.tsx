@@ -9,7 +9,7 @@ import { AuthProvider } from './context/AuthContext';
 import axios from 'axios';
 import PostDetail from './components/customer/posts/PostDetail';
 import PostList from './components/customer/posts/PostList';
-import Customerprofile from './components/customer/profile/Customerprofile';
+import CustomerProfile from './components/customer/profile/CustomerProfile';
 import ManagePost from './pages/admin/ManagePost';
 import PostDetails from './components/admin/PostDetails';
 // Set up axios interceptor
@@ -55,7 +55,7 @@ const App: React.FC = () => {
         },
         {
           path: '/profile',
-          element: <Customerprofile />,
+          element: <CustomerProfile />,
         }
       ],
     },
