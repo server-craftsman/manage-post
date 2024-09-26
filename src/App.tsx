@@ -9,6 +9,8 @@ import { AuthProvider } from './context/AuthContext';
 import axios from 'axios';
 import PostDetail from './components/customer/posts/PostDetail';
 import PostList from './components/customer/posts/PostList';
+import Customerprofile from './components/customer/profile/Customerprofile';
+
 // Set up axios interceptor
 axios.interceptors.request.use(
   config => {
@@ -49,6 +51,10 @@ const App: React.FC = () => {
         {
           path: '/posts',
           element: <PostList />,
+        },
+        {
+          path: '/profile',
+          element: <Customerprofile />,
         }
       ],
     },

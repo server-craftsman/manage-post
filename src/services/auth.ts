@@ -37,3 +37,8 @@ export const register = async (username: string, email: string, password: string
     throw new Error('Failed to register user');
   }
 };
+
+export const updateUser = async (userData: IUser): Promise<IUser> => {
+  const response = await axios.put(`/api/users/${userData.id}`, userData);
+  return response.data;
+};
