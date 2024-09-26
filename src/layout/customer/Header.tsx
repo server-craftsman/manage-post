@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/customer/Searchbar';
 import { useAuth } from '../../context/AuthContext';
@@ -14,6 +14,7 @@ const CustomHeader = () => {
   const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState<IPost[]>([]);
   const [allPosts, setAllPosts] = useState<IPost[]>([]);
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -25,6 +26,10 @@ const CustomHeader = () => {
     // Filter search results from allPosts
     const results = allPosts.filter(post => post.title.toLowerCase().includes(query.toLowerCase()));
     setSearchResults(results);
+  };
+
+  const handleResultClick = () => {
+    setSearchResults([]);
   };
 
   useMemo(async () => {
@@ -57,7 +62,7 @@ const CustomHeader = () => {
           </svg>
           <span style={{ fontWeight: 'bold', fontSize: '20px', color: '#000' }}>Blogs App</span>
         </Link>
-        <SearchBar onSearch={handleSearch} placeholder="Search..." searchResults={searchResults} />
+        <SearchBar onSearch={handleSearch} placeholder="Search..." searchResults={searchResults} onResultClick={handleResultClick} />
         <nav style={{ display: 'flex', alignItems: 'center' }}>
           <Link to="/" style={{ marginRight: '16px' }}>Home</Link>
           <Dropdown overlay={
@@ -66,7 +71,7 @@ const CustomHeader = () => {
               <Menu.Item key="product2">Product 2</Menu.Item>
             </Menu>
           }>
-            <Button type="link">
+            <Button type="link" ref={dropdownRef}>
               Products <DownOutlined />
             </Button>
           </Dropdown>
@@ -76,7 +81,7 @@ const CustomHeader = () => {
               <Menu.Item key="resource2">Resource 2</Menu.Item>
             </Menu>
           }>
-            <Button type="link">
+            <Button type="link" ref={dropdownRef}>
               Resources <DownOutlined />
             </Button>
           </Dropdown>
