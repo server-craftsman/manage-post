@@ -54,6 +54,8 @@ const PostDetail: React.FC = () => {
       <Paragraph style={{ width: '100%', marginBottom: 10, whiteSpace: 'pre-wrap', fontFamily: 'Poppins, sans-serif', textAlign: 'left' }}>{post.description}</Paragraph>
       <Text type="secondary" style={style}>Status: {post.status}</Text>
       <br />
+      <Text type="secondary" style={style}>Post By User: {post.userId}</Text>
+      <br />
       <Text type="secondary" style={style}>Created At: {formatDate(createdAt)}</Text>
       <br />
       <Text type="secondary" style={style}>Updated At: {formatDate(updatedAt)}</Text>
