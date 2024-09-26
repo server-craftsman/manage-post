@@ -7,7 +7,6 @@ import Login from './pages/authentication/Login';
 import Register from './pages/authentication/Register';
 import Dashboard from './pages/admin/Dashboard';
 import { AuthProvider } from './context/AuthContext';
-import axios from 'axios';
 import PostDetail from './components/customer/posts/PostDetail';
 import PostList from './components/customer/posts/PostList';
 import Unauthorized from './pages/errors/Unauthorized';
@@ -16,29 +15,29 @@ import UserDetail from './components/admin/UserDetail';
 import ManagePost from './pages/admin/ManagePost';
 import PostDetails from './components/admin/PostDetails';
 import CustomerProfile from './components/customer/profile/CustomerProfile';
+import './axiosConfig';
+// // Set up axios interceptor
+// axios.interceptors.request.use(
+//   config => {
+//     // Add any request interceptors here
+//     console.log('Request Interceptor', config);
+//     return config;
+//   },
+//   error => {
+//     return Promise.reject(error);
+//   }
+// );
 
-// Set up axios interceptor
-axios.interceptors.request.use(
-  config => {
-    // Add any request interceptors here
-    console.log('Request Interceptor', config);
-    return config;
-  },
-  error => {
-    return Promise.reject(error);
-  }
-);
-
-axios.interceptors.response.use(
-  response => {
-    // Add any response interceptors here
-    console.log('Response Interceptor', response);
-    return response;
-  },
-  error => {
-    return Promise.reject(error);
-  }
-);
+// axios.interceptors.response.use(
+//   response => {
+//     // Add any response interceptors here
+//     console.log('Response Interceptor', response);
+//     return response;
+//   },
+//   error => {
+//     return Promise.reject(error);
+//   }
+// );
 
 const App: React.FC = () => {
   const router = createBrowserRouter([

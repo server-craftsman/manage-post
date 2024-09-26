@@ -1,10 +1,10 @@
 import { IUser } from '../models/Users';
 import axios from 'axios'; 
-const API_URL = '/api/users';
-
+const API_URL = '/users';
+import axiosInstance from '../axiosConfig';
 export const login = async (email: string, password: string): Promise<IUser> => {
   try {
-    const response = await axios.get<IUser[]>(API_URL); 
+    const response = await axiosInstance.get<IUser[]>(API_URL); 
     const users = response.data;
     const user = users.find(user => user.email === email && user.password === password);
     if (!user) {
@@ -39,7 +39,7 @@ export const register = async (name: string, email: string, password: string, av
       avatar: avatarBase64
     };
 
-    const response = await axios.post<IUser>(API_URL, userData, {
+    const response = await axiosInstance.post<IUser>(API_URL, userData, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -60,7 +60,7 @@ export const register = async (name: string, email: string, password: string, av
 
 export const getAllUsers = async (): Promise<IUser[]> => {
   try {
-    const response = await axios.get<IUser[]>(API_URL); // Use axios instance
+    const response = await axiosInstance.get<IUser[]>(API_URL); // Use axios instance
     return response.data;
   } catch (error) {
     throw new Error('Failed to fetch users');
@@ -68,7 +68,7 @@ export const getAllUsers = async (): Promise<IUser[]> => {
 };
 
 export const getUserById = async (id: string): Promise<IUser> => {
-  const response = await axios.get<IUser>(`${API_URL}/${id}`);
+  const response = await axiosInstance.get<IUser>(`${API_URL}/${id}`);
   if (!response.data) {
     throw new Error('Failed to fetch user');
   }
@@ -76,10 +76,10 @@ export const getUserById = async (id: string): Promise<IUser> => {
 };
 
 export const deleteUser = async (id: string): Promise<void> => {
-  await axios.delete(`${API_URL}/${id}`);
+  await axiosInstance.delete(`${API_URL}/${id}`);
 };
 
 export const updateUser = async (userData: IUser): Promise<IUser> => {
-  const response = await axios.put(`/api/users/${userData.id}`, userData);
+  const response = await axiosInstance.put(`/api/users/${userData.id}`, userData);
   return response.data;
 };

@@ -1,9 +1,8 @@
 import { IPost } from '../models/Posts';
-import axios from 'axios';
-const API_URL = '/api/posts';
-
+const API_URL = '/posts';
+import axiosInstance from '../axiosConfig';
 export const fetchPosts = async (): Promise<IPost[]> => {
-  const response = await axios.get<IPost[]>(API_URL);
+  const response = await axiosInstance.get<IPost[]>(API_URL);
   if (!response.data) {
     throw new Error('Failed to fetch posts');
   }
@@ -11,7 +10,7 @@ export const fetchPosts = async (): Promise<IPost[]> => {
 };
 
 export const getPostById = async (id: string): Promise<IPost> => {
-  const response = await axios.get<IPost>(`${API_URL}/${id}`);
+  const response = await axiosInstance.get<IPost>(`${API_URL}/${id}`);
   if (!response.data) {
     throw new Error('Failed to fetch post');
   }
@@ -19,7 +18,7 @@ export const getPostById = async (id: string): Promise<IPost> => {
 };
 
 export const getAllPosts = async (): Promise<IPost[]> => {
-  const response = await axios.get<IPost[]>(API_URL);
+  const response = await axiosInstance.get<IPost[]>(API_URL);
   if (!response.data) {
     throw new Error('Failed to fetch posts');
   }
@@ -27,6 +26,6 @@ export const getAllPosts = async (): Promise<IPost[]> => {
 };
 
 export const deletePost = async (id: string): Promise<void> => {
-  await axios.delete(`${API_URL}/${id}`);
+  await axiosInstance.delete(`${API_URL}/${id}`);
 };
 
