@@ -9,10 +9,13 @@ import { AuthProvider } from './context/AuthContext';
 import axios from 'axios';
 import PostDetail from './components/customer/posts/PostDetail';
 import PostList from './components/customer/posts/PostList';
-import Customerprofile from './components/customer/profile/Customerprofile';
+
 import ManageUsers from './pages/admin/ManageUsers';
 import UserDetail from './components/admin/UserDetail';
 
+import CustomerProfile from './components/customer/profile/CustomerProfile';
+import ManagePost from './pages/admin/ManagePost';
+import PostDetails from './components/admin/PostDetails';
 // Set up axios interceptor
 axios.interceptors.request.use(
   config => {
@@ -56,7 +59,7 @@ const App: React.FC = () => {
         },
         {
           path: '/profile',
-          element: <Customerprofile />,
+          element: <CustomerProfile />,
         }
       ],
     },
@@ -79,6 +82,14 @@ const App: React.FC = () => {
         {
           path: 'detail/:id',
           element: <UserDetail />,
+        },
+        {
+          path: 'manage-post',
+          element: <ManagePost />,
+        },
+        {
+          path: 'post-detail/:id',
+          element: <PostDetails />,
         }
       ],
     },

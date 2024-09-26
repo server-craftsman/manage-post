@@ -61,17 +61,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('user', JSON.stringify(newUser));
   };
 
-  // Function to update user data
   const updateUser = async (userData: IUser) => {
-    try {
-      const updatedUser = await authService.updateUser(userData); // Adjust this service call to your needs
-      setUser(updatedUser); // Update the user state with the new data
-      localStorage.setItem('user', JSON.stringify(updatedUser)); // Update local storage
-    } catch (error) {
-      console.error('Failed to update user', error);
-      setError('Failed to update user');
-    }
-  };
+  try {
+    const updatedUser = await authService.updateUser(userData); // Adjust this service call to your needs
+    setUser(updatedUser); // Update the user state with the new data
+    localStorage.setItem('user', JSON.stringify(updatedUser)); // Update local storage
+  } catch (error) {
+    console.error('Failed to update user', error);
+    setError('Failed to update user');
+  }
+};
 
   return (
     <AuthContext.Provider value={{ user, login, logout, register, updateUser, error }}>

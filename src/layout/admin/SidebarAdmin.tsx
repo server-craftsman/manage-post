@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
         style={{ background: '#ffffff', color: '#000000', borderRight: 0 }}
       >
         
-        <Menu.Item key="2" icon={<FundOutlined style={{ color: '#000000' }} />}>
+        <Menu.Item key="2" icon={<FundOutlined style={{ color: '#000000' }} /> } onClick={() => navigate('/admin/dashboard')}>
           Overview
         </Menu.Item>
         <Link to="/admin/users">
@@ -39,7 +39,8 @@ const Navbar: React.FC = () => {
           Users
         </Menu.Item>
         </Link>
-        <Menu.Item key="4" icon={<OrderedListOutlined style={{ color: '#000000' }} />}>
+        
+        <Menu.Item key="4" icon={<OrderedListOutlined style={{ color: '#000000' }} />} onClick={() => navigate('/admin/manage-post')}>
           Posts
         </Menu.Item>
         <Menu.Item key="5" icon={<NotificationOutlined style={{ color: '#000000' }} />}>
