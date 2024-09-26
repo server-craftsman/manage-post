@@ -7,9 +7,9 @@ interface AuthContextType {
   user: IUser | null;
   login: (email: string, password: string) => Promise<IUser>;
   logout: () => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
-  updateUser: (userData: IUser) => Promise<void>; // Add updateUser to the context
-  error: string | null;
+  register: (name: string, email: string, password: string, avatar: File, role: string, createDate: Date, updateDate: Date) => Promise<void>;
+  updateUser: (userData: IUser) => Promise<void>;
+  error?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,7 +19,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for stored user data on component mount
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -28,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<IUser> => {
     try {
-      const user = await authService.login(email, password); // This should return user details including role
+      const user = await authService.login(email, password);
       if (user.role !== 'admin' && user.role !== 'customer') {
         throw new Error('Only admin and customer users can log in');
       }
@@ -40,7 +39,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (err instanceof AxiosError) {
         setError(err.response?.data?.message || 'An error occurred during login');
       } else {
-        setError('An unexpected error occurred');
+        if (err instanceof Error) {
+          setError(err.message || 'An unexpected error occurred');
+        } else {
+          setError('An unexpected error occurred');
+        }
       }
       throw err;
     }
@@ -55,25 +58,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
-    const newUser = await authService.register(username, email, password);
-    setUser(newUser);
-    localStorage.setItem('user', JSON.stringify(newUser));
+  const register = async (name: string, email: string, password: string, avatar: File, role: string, createDate: Date, updateDate: Date) => {
+    try {
+      const newUser = await authService.register(name, email, password, avatar, role, createDate, updateDate);
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+      setError(null);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        setError(err.response?.data?.message || 'An error occurred during registration');
+      } else {
+        if (err instanceof Error) {
+          setError(err.message || 'An unexpected error occurred');
+        } else {
+          setError('An unexpected error occurred');
+        }
+      }
+      throw err;
+    }
   };
 
   const updateUser = async (userData: IUser) => {
-  try {
-    const updatedUser = await authService.updateUser(userData); // Adjust this service call to your needs
-    setUser(updatedUser); // Update the user state with the new data
-    localStorage.setItem('user', JSON.stringify(updatedUser)); // Update local storage
-  } catch (error) {
-    console.error('Failed to update user', error);
-    setError('Failed to update user');
-  }
-};
+    try {
+      const updatedUser = await authService.updateUser(userData);
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error('Failed to update user', error);
+      setError('Failed to update user');
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error }}>
+    <AuthContext.Provider value={{ user: user ?? null, login, logout, register, updateUser, error: error ?? undefined }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 // import { motion } from 'framer-motion';
 import { Form, Input, Button, Alert, Typography, Row, Col } from 'antd';
 

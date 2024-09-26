@@ -3,19 +3,20 @@ import React from 'react';
 import AdminLayout from './layout/admin/AdminLayout';
 import CustomerLayout from './layout/customer/CustomerLayout';
 import Home from './pages/customers/Home';
-import Login from './pages/Login';
+import Login from './pages/authentication/Login';
+import Register from './pages/authentication/Register';
 import Dashboard from './pages/admin/Dashboard';
 import { AuthProvider } from './context/AuthContext';
 import axios from 'axios';
 import PostDetail from './components/customer/posts/PostDetail';
 import PostList from './components/customer/posts/PostList';
-
+import Unauthorized from './pages/errors/Unauthorized';
 import ManageUsers from './pages/admin/ManageUsers';
 import UserDetail from './components/admin/UserDetail';
-
-import CustomerProfile from './components/customer/profile/Customerprofile';
+import CustomerProfile from './components/customer/profile/CustomerProfile';
 import ManagePost from './pages/admin/ManagePost';
 import PostDetails from './components/admin/PostDetails';
+
 // Set up axios interceptor
 axios.interceptors.request.use(
   config => {
@@ -60,12 +61,21 @@ const App: React.FC = () => {
         {
           path: '/profile',
           element: <CustomerProfile />,
-        }
+        },
+        
       ],
+    },
+    {
+      path: '/unauthorized',
+      element: <Unauthorized />,
     },
     {
       path: '/login',
       element: <Login />,
+    },
+    {
+      path: '/register',
+      element: <Register />,
     },
     {
       path: '/admin',
@@ -76,7 +86,7 @@ const App: React.FC = () => {
           element: <Dashboard />,
         },
         {
-          path: 'users',
+          path: 'manage-users',
           element: <ManageUsers/>
         },
         {

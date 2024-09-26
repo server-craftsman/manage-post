@@ -1,6 +1,7 @@
 import { IUser } from '../models/Users';
 import axios from 'axios'; 
 const API_URL = '/api/users';
+
 export const login = async (email: string, password: string): Promise<IUser> => {
   try {
     const response = await axios.get<IUser[]>(API_URL); 
@@ -20,19 +21,27 @@ export const logout = async (): Promise<void> => {
   localStorage.removeItem('user'); // Remove user data from local storage
 };
 
-export const register = async (username: string, email: string, password: string): Promise<IUser> => {
+export const register = async (name: string, email: string, password: string, avatar: File, role: string, createDate: Date, updateDate: Date): Promise<IUser> => {
   try {
-    const response = await axios.post<IUser>(API_URL, { // Use axios instance
-      username,
-      email,
-      password,
-      role: 'user', // Default role
-      createdAt: new Date(), // Use Date object for createdAt
-      updatedAt: new Date(), // Use Date object for updatedAt
-      avatar: 'path/to/image', // Use avatar instead of userImage
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('role', role);
+    formData.append('createDate', createDate.toISOString());
+    formData.append('updateDate', updateDate.toISOString());
+    formData.append('avatar', avatar);
+
+    const response = await axios.post<IUser>(API_URL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 413) {
+      throw new Error('Payload Too Large');
+    }
     throw new Error('Failed to register user');
   }
 };

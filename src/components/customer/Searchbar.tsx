@@ -1,49 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { Input, Dropdown, Menu } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { IPost } from '../../models/Posts';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder: string;
+  searchResults: IPost[];
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch, placeholder }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, placeholder, searchResults }) => {
   const [query, setQuery] = useState('');
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
       onSearch(query);
-    }
-  };
+    }, 300); // Adjust the delay as needed
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query, onSearch]);
+  const filteredResults = useMemo(() => {
+    return query.trim() ? searchResults : [];
+  }, [query, searchResults]);
+
+  const menu = (
+    <Menu>
+      {filteredResults.map((post) => (
+        <Menu.Item key={post.id}>
+          <Link to={`/posts/${post.id}`}>{post.title}</Link>
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
 
   return (
-    <form className="flex items-center">
-      <div className="relative flex-grow group ml-2">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyPress} // Changed from onKeyPress to onKeyDown
-          placeholder={placeholder}
-          className="border-2 border-gray-300 rounded-lg px-6 py-1 w-full pl-12 text-lg focus:outline-none focus:border-gold-500 transition duration-200 ease-in-out shadow-lg transform group-hover:scale-105 focus:scale-105"
-        />
-        <svg
-          className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gold-500 transition duration-300 ease-in-out group-hover:scale-105 group-focus:scale-105"
-          width="24"
-          height="24"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          ></path>
-        </svg>
-      </div>
-    </form>
+    <Dropdown overlay={menu} visible={filteredResults.length > 0}>
+      <Input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={placeholder}
+        prefix={<SearchOutlined />}
+        style={{ 
+          width: '300px', 
+          borderRadius: '24px', 
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+          border: '1px solid #d9d9d9' 
+        }}
+      />
+    </Dropdown>
   );
 };
 

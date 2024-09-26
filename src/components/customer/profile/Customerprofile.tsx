@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Card, Descriptions, Avatar, Button, Modal, Form, Input } from "antd";
+import { Card, Descriptions, Avatar, Button, Modal, Form, Input, Upload, message } from "antd";
 import { useAuth } from "../../../context/AuthContext";
 import { IUser } from "../../../models/Users";
+import { UploadOutlined } from '@ant-design/icons';
 
 const CustomerProfile: React.FC = () => {
   const { user, updateUser } = useAuth(); // Assuming you have an updateUser function in your context
@@ -9,6 +10,7 @@ const CustomerProfile: React.FC = () => {
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   if (!user) {
     return <div>Please log in to view your profile.</div>;
@@ -26,14 +28,43 @@ const CustomerProfile: React.FC = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      const updatedData: IUser = {
-        ...user,
-        ...values,
-        updateDate: new Date().toISOString(), // Update the date to current time
-      };
-      await updateUser(updatedData);
-      setIsModalVisible(false);
-      passwordForm.resetFields(); // Reset password form fields after updating profile
+      let avatar = user.avatar;
+
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append('avatar', avatarFile);
+        formData.append('name', values.name);
+        formData.append('email', values.email);
+        formData.append('updateDate', new Date().toISOString());
+
+        const updatedData: IUser = {
+          ...user,
+          ...values,
+          avatar: URL.createObjectURL(avatarFile),
+          updateDate: new Date().toISOString(), // Update the date to current time
+        };
+
+        try {
+          await updateUser(updatedData);
+          setIsModalVisible(false);
+          form.resetFields(); // Reset form fields after updating profile
+        } catch (error) {
+          if (error instanceof Error && error.message === 'Payload Too Large') {
+            message.error('Avatar file is too large. Please upload a smaller file.');
+          } else {
+            message.error('Failed to update profile.');
+          }
+        }
+      } else {
+        const updatedData: IUser = {
+          ...user,
+          ...values,
+          updateDate: new Date().toISOString(), // Update the date to current time
+        };
+        await updateUser(updatedData);
+        setIsModalVisible(false);
+        form.resetFields(); // Reset form fields after updating profile
+      }
     } catch (error) {
       console.error("Failed to validate form:", error);
     }
@@ -60,6 +91,13 @@ const CustomerProfile: React.FC = () => {
       return Promise.reject("The two passwords that you entered do not match!");
     },
   });
+
+  const handleAvatarChange = (info: any) => {
+    if (info.file.status === 'done') {
+      setAvatarFile(info.file.originFileObj);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card style={{ width: "100%" }}>
@@ -125,8 +163,18 @@ const CustomerProfile: React.FC = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item label="Avatar URL" name="avatar">
+          {/* <Form.Item label="Avatar URL" name="avatar">
             <Input />
+          </Form.Item> */}
+          <Form.Item label="Upload Avatar">
+            <Upload
+              name="avatar"
+              listType="picture"
+              beforeUpload={() => false}
+              onChange={handleAvatarChange}
+            >
+              <Button icon={<UploadOutlined />}>Click to Upload</Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>
