@@ -1,10 +1,9 @@
 import { IUser } from '../models/Users';
 import axios from 'axios'; 
 const API_URL = '/api/users';
-
 export const login = async (email: string, password: string): Promise<IUser> => {
   try {
-    const response = await axios.get<IUser[]>(API_URL); // Use axios instance
+    const response = await axios.get<IUser[]>(API_URL); 
     const users = response.data;
     const user = users.find(user => user.email === email && user.password === password);
     if (!user) {
@@ -45,9 +44,9 @@ export const getAllUsers = async (): Promise<IUser[]> => {
   } catch (error) {
     throw new Error('Failed to fetch users');
   }
+};
 
 export const updateUser = async (userData: IUser): Promise<IUser> => {
   const response = await axios.put(`/api/users/${userData.id}`, userData);
   return response.data;
-
 };

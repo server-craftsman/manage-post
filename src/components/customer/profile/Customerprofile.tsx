@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, Descriptions, Avatar, Button, Modal, Form, Input } from 'antd';
 import { useAuth } from '../../../context/AuthContext';
 import { IUser  } from '../../../models/Users';

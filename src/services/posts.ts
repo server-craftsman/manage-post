@@ -26,3 +26,7 @@ export const getAllPosts = async (): Promise<IPost[]> => {
   return response.data;
 };
 
+export const deletePost = async (id: string): Promise<void> => {
+  await axios.delete(`${API_URL}/${id}`);
+};
+
