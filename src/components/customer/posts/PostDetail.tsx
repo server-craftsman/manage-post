@@ -10,7 +10,7 @@ const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<IPost | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  // Removed unused error state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,11 +20,10 @@ const PostDetail: React.FC = () => {
           const fetchedPost = await getPostById(id);
           setPost(fetchedPost);
         } else {
-          throw new Error("Post ID is undefined");
+          console.error("Post ID is undefined");
         }
       } catch (error) {
-        setError(`Error fetching post: ${error}`);
-        navigate('/posts');
+        console.error("Error fetching post:", error);
       } finally {
         setLoading(false);
       }

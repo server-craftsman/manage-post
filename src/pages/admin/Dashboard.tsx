@@ -16,8 +16,8 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<IUser[]>([]);
   const [posts, setPosts] = useState<IPost[]>([]); 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Removed unused loading state
+  const [error] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.role !== 'admin') {
@@ -33,9 +33,9 @@ const AdminDashboard = () => {
       setUsers(users);
       setPosts(posts);
     } catch (err) {
-      setError('Failed to fetch data');
+      console.error('Failed to fetch data:', err);
     } finally {
-      setLoading(false);
+      console.log('Data fetched successfully');
     }
   };
 
@@ -94,12 +94,12 @@ const AdminDashboard = () => {
         </Col>
        
         <Col xs={24}>
-          <Card style={{ height: '300px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+          <Card style={{ height: '500px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <Bar data={barData} />
           </Card>
         </Col>
         <Col xs={24}>
-          <Card style={{ height: '500px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+          <Card style={{ height: '1000px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <Pie data={pieData} />
           </Card>
         </Col>

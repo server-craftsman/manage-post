@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { IPost } from '../../../models/Posts';
 import { v4 as uuidv4 } from 'uuid';
