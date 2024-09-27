@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import React from 'react';
+import React, { Suspense } from 'react';
 import AdminLayout from './layout/admin/AdminLayout';
 import CustomerLayout from './layout/customer/CustomerLayout';
 import Home from './pages/customers/Home';
@@ -25,61 +25,61 @@ const App: React.FC = () => {
       children: [
         {
           index: true,
-          element: <Home />,
+          element: <Suspense fallback={<div>Loading...</div>}><Home /></Suspense>,
         },
         {
           path: '/posts/:id',
-          element: <PostDetail />,
+          element: <Suspense fallback={<div>Loading...</div>}><PostDetail /></Suspense>,
         },
         {
           path: '/posts',
-          element: <PostList />,
+          element: <Suspense fallback={<div>Loading...</div>}><PostList /></Suspense>,
         },
         {
           path: '/profile',
-          element: <CustomerProfile />,
+          element: <Suspense fallback={<div>Loading...</div>}><CustomerProfile /></Suspense>,
         },
         {
           path: '/create-post',
-          element: <CreatePost />,
+          element: <Suspense fallback={<div>Loading...</div>}><CreatePost /></Suspense>,
         }
       ],
     },
     {
       path: '/unauthorized',
-      element: <Unauthorized />,
+      element: <Suspense fallback={<div>Loading...</div>}><Unauthorized /></Suspense>,
     },
     {
       path: '/login',
-      element: <Login />,
+      element: <Suspense fallback={<div>Loading...</div>}><Login /></Suspense>,
     },
     {
       path: '/register',
-      element: <Register />,
+      element: <Suspense fallback={<div>Loading...</div>}><Register /></Suspense>,
     },
     {
       path: '/admin',
-      element: <AdminLayout />,
+      element: <Suspense fallback={<div>Loading...</div>}><AdminLayout /></Suspense>,
       children: [
         {
           path: 'dashboard',
-          element: <Dashboard />,
+          element: <Suspense fallback={<div>Loading...</div>}><Dashboard /></Suspense>,
         },
         {
           path: 'manage-users',
-          element: <ManageUsers/>
+          element: <Suspense fallback={<div>Loading...</div>}><ManageUsers /></Suspense>
         },
         {
           path: 'detail/:id',
-          element: <UserDetail />,
+          element: <Suspense fallback={<div>Loading...</div>}><UserDetail /></Suspense>,
         },
         {
           path: 'manage-post',
-          element: <ManagePost />,
+          element: <Suspense fallback={<div>Loading...</div>}><ManagePost /></Suspense>,
         },
         {
           path: 'post-detail/:id',
-          element: <PostDetails />,
+          element: <Suspense fallback={<div>Loading...</div>}><PostDetails /></Suspense>,
         }
       ],
     },
@@ -87,9 +87,11 @@ const App: React.FC = () => {
   ]);
 
   return (  
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </Suspense>
   );
 };
 
