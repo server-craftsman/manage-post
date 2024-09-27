@@ -1,22 +1,23 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import React, { Suspense } from 'react';
-import AdminLayout from './layout/admin/AdminLayout';
-import CustomerLayout from './layout/customer/CustomerLayout';
-import Home from './pages/customers/Home';
-import Login from './pages/authentication/Login';
-import Register from './pages/authentication/Register';
-import Dashboard from './pages/admin/Dashboard';
-import { AuthProvider } from './context/AuthContext';
-import PostDetail from './components/customer/posts/PostDetail';
-import PostList from './components/customer/posts/PostList';
-import Unauthorized from './pages/errors/Unauthorized';
-import ManageUsers from './pages/admin/ManageUsers';
-import UserDetail from './components/admin/UserDetail';
-import ManagePost from './pages/admin/ManagePost';
-import PostDetails from './components/admin/PostDetails';
-import CustomerProfile from './components/customer/profile/CustomerProfile';
-import CreatePost from './components/customer/posts/CreatePost';
+import React, { Suspense, lazy } from 'react';
 import './axiosConfig';
+import { AuthProvider } from './context/AuthContext';
+const AdminLayout = lazy(() => import('./layout/admin/AdminLayout'));
+const CustomerLayout = lazy(() => import('./layout/customer/CustomerLayout'));
+const Home = lazy(() => import('./pages/customers/Home'));
+const Login = lazy(() => import('./pages/authentication/Login'));
+const Register = lazy(() => import('./pages/authentication/Register'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const PostDetail = lazy(() => import('./components/customer/posts/PostDetail'));
+const PostList = lazy(() => import('./components/customer/posts/PostList'));
+const Unauthorized = lazy(() => import('./pages/errors/Unauthorized'));
+const ManageUsers = lazy(() => import('./pages/admin/ManageUsers'));
+const UserDetail = lazy(() => import('./components/admin/UserDetail'));
+const ManagePost = lazy(() => import('./pages/admin/ManagePost'));
+const PostDetails = lazy(() => import('./components/admin/PostDetails'));
+const CustomerProfile = lazy(() => import('./components/customer/profile/CustomerProfile'));
+const CreatePost = lazy(() => import('./components/customer/posts/CreatePost'));
+
 const App: React.FC = () => {
   const router = createBrowserRouter([
     {
@@ -28,37 +29,37 @@ const App: React.FC = () => {
           element: <Suspense fallback={<div>Loading...</div>}><Home /></Suspense>,
         },
         {
-          path: '/posts/:id',
+          path: 'posts/:id',
           element: <Suspense fallback={<div>Loading...</div>}><PostDetail /></Suspense>,
         },
         {
-          path: '/posts',
+          path: 'posts',
           element: <Suspense fallback={<div>Loading...</div>}><PostList /></Suspense>,
         },
         {
-          path: '/profile',
+          path: 'profile',
           element: <Suspense fallback={<div>Loading...</div>}><CustomerProfile /></Suspense>,
         },
         {
-          path: '/create-post',
+          path: 'create-post',
           element: <Suspense fallback={<div>Loading...</div>}><CreatePost /></Suspense>,
         }
       ],
     },
     {
-      path: '/unauthorized',
+      path: 'unauthorized',
       element: <Suspense fallback={<div>Loading...</div>}><Unauthorized /></Suspense>,
     },
     {
-      path: '/login',
+      path: 'login',
       element: <Suspense fallback={<div>Loading...</div>}><Login /></Suspense>,
     },
     {
-      path: '/register',
+      path: 'register',
       element: <Suspense fallback={<div>Loading...</div>}><Register /></Suspense>,
     },
     {
-      path: '/admin',
+      path: 'admin',
       element: <Suspense fallback={<div>Loading...</div>}><AdminLayout /></Suspense>,
       children: [
         {
@@ -83,7 +84,6 @@ const App: React.FC = () => {
         }
       ],
     },
-
   ]);
 
   return (  
