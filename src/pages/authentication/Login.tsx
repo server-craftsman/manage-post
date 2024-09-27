@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 // import { motion } from 'framer-motion';
-import { Form, Input, Button, Alert, Typography, Row, Col } from 'antd';
+import { Form, Input, Button, Alert, Typography, Row, Col, message } from 'antd';
 
 const { Title } = Typography;
 
@@ -20,6 +20,7 @@ const Login: React.FC = () => {
       if (user == null || !user.role) {
         throw new Error('Invalid user or role');
       }
+      message.success('Login successful!');
       if (user.role === 'admin') {
         navigate('/admin/dashboard');
       } else if (user.role === 'customer') {

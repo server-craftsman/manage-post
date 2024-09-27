@@ -65,8 +65,8 @@ const Register = () => {
       {/* Right side - Register Form */}
       <div className="w-1/2 bg-white flex items-center justify-center">
         <div className="w-full max-w-md p-8">
-          <h2 className="text-center text-2xl font-bold mb-6">Register</h2>
-          {error && <p className="text-red-500 text-center">{error}</p>} {/* Display error message */}
+          <h2 className="text-center text-2xl font-bold mb-6">Register Your Account</h2>
+          {error && <p className="text-red-500 text-center">{error}</p>}
           <Form
             name="register"
             onFinish={onFinish}
@@ -75,28 +75,47 @@ const Register = () => {
           >
             <Form.Item
               name="name"
-              rules={[{ required: true, message: 'Please input your Name!' }]}
+              rules={[
+                { required: true, message: 'Please input your Name!' },
+                { min: 3, message: 'Name must be at least 3 characters long!' }
+              ]}
             >
               <Input placeholder="Name" />
             </Form.Item>
 
             <Form.Item
               name="email"
-              rules={[{ required: true, message: 'Please input your Email!' }]}
+              rules={[
+                { required: true, message: 'Please input your Email!' },
+                { type: 'email', message: 'Please enter a valid Email!' }
+              ]}
             >
               <Input placeholder="Email" />
             </Form.Item>
 
             <Form.Item
               name="password"
-              rules={[{ required: true, message: 'Please input your Password!' }]}
+              rules={[
+                { required: true, message: 'Please input your Password!' },
+                { min: 6, message: 'Password must be at least 6 characters long!' }
+              ]}
             >
               <Input.Password placeholder="Password" />
             </Form.Item>
 
             <Form.Item
               name="confirmPassword"
-              rules={[{ required: true, message: 'Please confirm your Password!' }]}
+              rules={[
+                { required: true, message: 'Please confirm your Password!' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('The two passwords do not match!'));
+                  },
+                }),
+              ]}
             >
               <Input.Password placeholder="Confirm Password" />
             </Form.Item>
