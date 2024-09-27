@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IPost } from '../../models/Posts';
 import { getAllPosts} from '../../services/posts';
-import { Table, Button } from 'antd';
+import { Table, Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 const ManageBlogs: React.FC = () => {
@@ -30,9 +30,15 @@ const ManageBlogs: React.FC = () => {
   const handleViewDetails = (postId: string) => {
     navigate(`/admin/post-detail/${postId}`);
   };
-
+  
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spin size="large">
+          <div>Loading...</div>
+        </Spin>
+      </div>
+    );
   }
 
   if (error) {
@@ -54,7 +60,7 @@ const ManageBlogs: React.FC = () => {
           render={( post: IPost) => (
             <>
               
-              <Button type="default" onClick={() => handleViewDetails(post.id.toString())}>View Details</Button>
+              <Button type="default" onClick={() => handleViewDetails(post.id.toString())} style={{ backgroundColor: "#4B0082", borderColor: "#4B0082", color: "#fff", fontWeight: "bold", padding: "10px 20px", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }}>View Details</Button>
             </>
           )}
         />

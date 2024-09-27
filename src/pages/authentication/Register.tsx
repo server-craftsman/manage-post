@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Form, Input, Button, message } from 'antd';
+import { Form, Input, Button, message, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { IUser } from '../../models/Users';
@@ -7,9 +8,10 @@ import { v4 as uuidv4 } from 'uuid';
 import Compressor from 'compressorjs'; // Import Compressor.js
 
 const Register = () => {
-  const { register, error } = useAuth(); // Include error from useAuth
-  const [avatarBase64, setAvatarBase64] = useState<string | null>(null);
-  const navigate = useNavigate(); // Use navigate hook from react-router-dom
+  const { register, error } = useAuth();
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   const onFinish = async (values: { name: string; username: string; email: string; password: string; confirmPassword: string }) => {
     try {
@@ -18,7 +20,7 @@ const Register = () => {
         message.error('Passwords do not match.');
         return;
       }
-      if (!avatarBase64) {
+      if (!avatarFile) {
         message.error('Please upload your Avatar!');
         return;
       }
@@ -27,12 +29,11 @@ const Register = () => {
         name,
         email,
         password,
-        avatar: avatarBase64,
+        avatar: '', // Avatar will be handled separately
         role: 'customer',
         createDate: new Date(),
         updateDate: new Date()
       };
-      const avatarFile = new File([user.avatar], "avatar.jpg", { type: "image/jpeg" });
       await register(user.name, user.email, user.password, avatarFile, user.role, user.createDate, user.updateDate);
       message.success('Registration successful!');
       navigate('/login'); // Navigate to login page after successful registration
@@ -104,33 +105,45 @@ const Register = () => {
               name="avatar"
               rules={[{ required: true, message: 'Please upload your Avatar!' }]}
             >
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    if (file.size > 1024 * 1024 * 1024 * 1024) {
-                      message.error('Avatar image is too large. Please upload a smaller image.');
-                      return;
-                    }
-                    new Compressor(file, {
-                      quality: 0.6, // Adjust the quality as needed
-                      success: (compressedFile) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          const base64String = reader.result as string;
-                          setAvatarBase64(base64String); // Set the base64 string to state
-                        };
-                        reader.readAsDataURL(compressedFile);
-                      },
-                      error: () => {
-                        message.error('Failed to compress image. Please try again.');
-                      },
-                    });
+              <Upload
+                name="avatar"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                fileList={fileList}
+                beforeUpload={(file) => {
+                  const isImage = file.type.startsWith('image/');
+                  if (!isImage) {
+                    message.error('You can only upload image files!');
+                    return Upload.LIST_IGNORE;
                   }
+                  const isLt1024GB = file.size / 1024 / 1024 / 1024 < 1024;
+                  if (!isLt1024GB) {
+                    message.error('Image must be smaller than 1024GB!');
+                    return Upload.LIST_IGNORE;
+                  }
+                  new Compressor(file, {
+                    quality: 0.5, // Adjust the quality as needed
+                    success: (compressedFile) => {
+                      setAvatarFile(compressedFile as File); // Set the compressed file to state
+                      setFileList([compressedFile]); // Update fileList state
+                    },
+                    error: () => {
+                      message.error('Failed to compress image. Please try again.');
+                    },
+                  });
+                  return false;
                 }}
-              />
+              >
+                {avatarFile ? (
+                  <img src={URL.createObjectURL(avatarFile)} alt="avatar" style={{ width: '100%' }} />
+                ) : (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
             </Form.Item>
 
             <Form.Item>

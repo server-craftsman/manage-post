@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { IUser } from '../models/Users';
+import { IPost } from '../models/Posts';
 import * as authService from '../services/auth';
+import * as postService from '../services/posts';
 import { AxiosError } from 'axios';
 
 interface AuthContextType {
@@ -10,6 +12,11 @@ interface AuthContextType {
   register: (name: string, email: string, password: string, avatar: File, role: string, createDate: Date, updateDate: Date) => Promise<void>;
   updateUser: (userData: IUser) => Promise<void>;
   error?: string;
+  posts: IPost[];
+  createPost: (post: IPost, postImage?: File) => Promise<void>;
+  updatePost: (post: IPost) => Promise<void>;
+  deletePost: (id: string) => Promise<void>;
+  setPosts: (posts: IPost[]) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,12 +24,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [posts, setPosts] = useState<IPost[]>([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const fetchedPosts = await postService.fetchPosts();
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error('Failed to fetch posts', error);
+      }
+    };
+    fetchPosts();
   }, []);
 
   const login = async (email: string, password: string): Promise<IUser> => {
@@ -79,6 +99,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const createPost = async (post: IPost, postImage?: File) => {
+    if (!user) {
+      throw new Error('You must be logged in to create a post');
+    }
+    try {
+      const newPost = await postService.createPost(post, postImage); // Pass postImage to postService
+      setPosts([...posts, newPost]);
+      localStorage.setItem('posts', JSON.stringify([...posts, newPost]));
+      setError(null);
+    } catch (error) {
+      const err = error as any;
+      if (err.message === 'Service is currently unavailable. Please try again later.') {
+        setError('Service is currently unavailable. Please try again later.');
+      } else {
+        setError('Failed to create post');
+      }
+      console.error('Failed to create post', error);
+      throw error;
+    }
+  };
+
   const updateUser = async (userData: IUser) => {
     try {
       const updatedUser = await authService.updateUser(userData);
@@ -90,8 +131,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updatePost = async (post: IPost) => {
+    try {
+      const updatedPost = await postService.updatePost(post);
+      if (updatedPost !== undefined && updatedPost !== null) {
+        setPosts(posts.map(p => p.id === updatedPost.id ? updatedPost : p));
+      } else {
+        console.error('Failed to update post: updatePost returned void');
+      }
+    } catch (error) {
+      console.error('Failed to update post', error);
+      throw error;
+    }
+  };
+
+  const deletePost = async (id: string) => {
+    try {
+      await postService.deletePost(id);
+      setPosts(posts.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('Failed to delete post', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, createPost, updatePost, deletePost, setPosts }}>
       {children}
     </AuthContext.Provider>
   );

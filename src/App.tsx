@@ -15,30 +15,8 @@ import UserDetail from './components/admin/UserDetail';
 import ManagePost from './pages/admin/ManagePost';
 import PostDetails from './components/admin/PostDetails';
 import CustomerProfile from './components/customer/profile/CustomerProfile';
+import CreatePost from './components/customer/posts/CreatePost';
 import './axiosConfig';
-// // Set up axios interceptor
-// axios.interceptors.request.use(
-//   config => {
-//     // Add any request interceptors here
-//     console.log('Request Interceptor', config);
-//     return config;
-//   },
-//   error => {
-//     return Promise.reject(error);
-//   }
-// );
-
-// axios.interceptors.response.use(
-//   response => {
-//     // Add any response interceptors here
-//     console.log('Response Interceptor', response);
-//     return response;
-//   },
-//   error => {
-//     return Promise.reject(error);
-//   }
-// );
-
 const App: React.FC = () => {
   const router = createBrowserRouter([
     {
@@ -61,7 +39,10 @@ const App: React.FC = () => {
           path: '/profile',
           element: <CustomerProfile />,
         },
-        
+        {
+          path: '/create-post',
+          element: <CreatePost />,
+        }
       ],
     },
     {
@@ -105,7 +86,7 @@ const App: React.FC = () => {
 
   ]);
 
-  return (
+  return (  
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>

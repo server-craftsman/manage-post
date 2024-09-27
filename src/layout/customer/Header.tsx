@@ -87,7 +87,7 @@ const CustomHeader = () => {
               Resources <DownOutlined />
             </Button>
           </Dropdown> */}
-          <Link to="/posts" style={{ marginLeft: '16px' }}>
+          <Link to="/create-post" style={{ marginLeft: '16px' }}>
             <Button type="link" icon={<EditOutlined />}>Write</Button>
           </Link>
         </nav>

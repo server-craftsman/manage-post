@@ -11,13 +11,46 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 const { Sider } = Layout;
 import { useAuth } from '../../context/AuthContext';
-const Navbar: React.FC = () => {
+const SidebarAdmin: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
   };
+
+  const menuItems = [
+    {
+      key: '2',
+      icon: <FundOutlined style={{ color: '#000000' }} />,
+      label: 'Overview',
+      onClick: () => navigate('/admin/dashboard'),
+    },
+    {
+      key: '3',
+      icon: <TeamOutlined style={{ color: '#000000' }} />,
+      label: <Link to="/admin/manage-users">Manage Users</Link>,
+    },
+    {
+      key: '4',
+      icon: <OrderedListOutlined style={{ color: '#000000' }} />,
+      label: <Link to="/admin/manage-post">Manage Posts</Link>,
+    },
+    {
+      key: '5',
+      icon: <NotificationOutlined style={{ color: '#000000' }} />,
+      label: 'Notifications',
+    },
+    {
+      key: '7',
+      icon: <LogoutOutlined style={{ color: '#000000' }} />,
+      label: (
+        <span onClick={handleLogout}>
+          <Link to="/login">Logout</Link>
+        </span>
+      ),
+    },
+  ];
 
   return (
     <Sider width={250} style={{ background: '#ffffff', borderRight: '1px solid #d9d9d9' }}>
@@ -29,32 +62,10 @@ const Navbar: React.FC = () => {
         mode="vertical"
         defaultSelectedKeys={['1']}
         style={{ background: '#ffffff', color: '#000000', borderRight: 0 }}
-      >
-        
-        <Menu.Item key="2" icon={<FundOutlined style={{ color: '#000000' }} /> } onClick={() => navigate('/admin/dashboard')}>
-          Overview
-        </Menu.Item>
-        <Link to="/admin/manage-users">
-        <Menu.Item key="3" icon={<TeamOutlined style={{ color: '#000000' }} />}>
-          Manage Users
-        </Menu.Item>
-        </Link>
-        <Link to="/admin/manage-post">
-        <Menu.Item key="4" icon={<OrderedListOutlined style={{ color: '#000000' }} />}>
-          Manage Posts
-        </Menu.Item>
-        </Link>
-        <Menu.Item key="5" icon={<NotificationOutlined style={{ color: '#000000' }} />}>
-          Notifications
-        </Menu.Item>
-        <Link to="/login">
-          <Menu.Item key="7" icon={<LogoutOutlined style={{ color: '#000000' }} />}>
-            <span onClick={handleLogout}>Logout</span>
-          </Menu.Item>
-        </Link>
-      </Menu>
+        items={menuItems}
+      />
     </Sider>
   );
 };
 
-export default Navbar;
+export default SidebarAdmin;

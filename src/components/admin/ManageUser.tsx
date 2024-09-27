@@ -2,9 +2,10 @@ import { Button, Table, Spin, Alert } from "antd";
 import { useEffect, useState } from "react";
 import { getAllUsers } from "../../services/auth";
 import { Link } from "react-router-dom";
+import { IUser } from "../../models/Users";
 
 const ManageUsers = () => {
-  const [dataSource, setDataSource] = useState([]);
+  const [dataSource, setDataSource] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,10 +33,10 @@ const ManageUsers = () => {
     {
       title: "Action",
       dataIndex: "id",
-      key: "id",
+      key: "action",
       render: (id: string) => (
-        <Link to={`/admin/detail/${id}`}>
-          <Button type="primary" style={{ backgroundColor: "#1890ff", borderColor: "#1890ff" }}>View Detail</Button>
+        <Link to={`/admin/detail/${id}`} key={id}>
+          <Button type="primary" style={{ backgroundColor: "#4B0082", borderColor: "#4B0082", color: "#fff", fontWeight: "bold", padding: "10px 20px", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }}>View Detail</Button>
         </Link>
       ),
     },
@@ -46,7 +47,7 @@ const ManageUsers = () => {
       try {
         setLoading(true);
         const users = await getAllUsers();
-        setDataSource(users as any);
+        setDataSource(users.map(user => ({ ...user, key: user.id })));
       } catch (error) {
         setError(`Error fetching users: ${error}`);
       } finally {

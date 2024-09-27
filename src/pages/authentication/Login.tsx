@@ -77,6 +77,7 @@ const Login: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Item>
+
             <Form.Item>
               <div>
                 <Button
@@ -87,6 +88,13 @@ const Login: React.FC = () => {
                 >
                   {isLoading ? 'Signing In...' : 'Sign In'}
                 </Button>
+              </div>
+            </Form.Item>
+            <Form.Item>
+              <div className="text-center mt-1">
+                <Link to="/register" className="text-lg font-semibold text-indigo-500 hover:text-indigo-600">
+                  Don't have an account? <span className="underline">Register here</span>
+                </Link>
               </div>
             </Form.Item>
           </Form>

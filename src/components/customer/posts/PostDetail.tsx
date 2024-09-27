@@ -10,6 +10,7 @@ const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<IPost | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,7 +23,7 @@ const PostDetail: React.FC = () => {
           throw new Error("Post ID is undefined");
         }
       } catch (error) {
-        console.error('Failed to fetch post:', error);
+        setError(`Error fetching post: ${error}`);
         navigate('/posts');
       } finally {
         setLoading(false);

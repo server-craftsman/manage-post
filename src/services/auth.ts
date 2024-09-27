@@ -80,6 +80,6 @@ export const deleteUser = async (id: string): Promise<void> => {
 };
 
 export const updateUser = async (userData: IUser): Promise<IUser> => {
-  const response = await axiosInstance.put(`/api/users/${userData.id}`, userData);
+  const response = await axiosInstance.put(`${API_URL}/${userData.id}`, userData);
   return response.data;
 };
