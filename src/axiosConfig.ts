@@ -2,8 +2,11 @@ import axios from 'axios';
 
 // Create an instance of axios
 const axiosInstance = axios.create({
-  baseURL: '/api', // Set your base URL here
+  baseURL: 'https://66f4051b77b5e8897097eaef.mockapi.io/', 
   timeout: 10000, // Set a timeout if needed
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Request interceptor
