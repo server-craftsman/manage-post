@@ -156,7 +156,8 @@ const CustomerProfile: React.FC = () => {
       case 'newPassword':
         return [
           { required: true, message: "Please input your new password!" },
-          { min: 6, message: "Password must be at least 6 characters." }
+          { min: 6, message: "Password must be at least 6 characters." },
+          { pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/, message: "Password must contain at least 6 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character." }
         ];
       case 'confirmPassword':
         return [

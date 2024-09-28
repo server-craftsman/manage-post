@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/customer/Searchbar';
 import { useAuth } from '../../context/AuthContext';
-import { Avatar, Button, Dropdown, Layout } from 'antd';
+import { Avatar, Button, Dropdown, Layout, Tooltip } from 'antd';
 import { UserOutlined, LogoutOutlined, EditOutlined, HistoryOutlined } from '@ant-design/icons';
 import { IPost } from '../../models/Posts';
 import { fetchPosts } from '../../services/posts';
@@ -76,29 +76,15 @@ const CustomHeader = () => {
         <SearchBar onSearch={handleSearch} placeholder="Search..." searchResults={searchResults} onResultClick={handleResultClick} />
         <nav style={{ display: 'flex', alignItems: 'center' }}>
           <Link to="/" style={{ marginRight: '16px' }}>Home</Link>
-          {/* <Dropdown menu={(
-            <Menu>
-              <Menu.Item key="product1">Product 1</Menu.Item>
-              <Menu.Item key="product2">Product 2</Menu.Item>
-            </Menu>
-          )}>
-            <Button type="link" ref={dropdownRef}>
-              Products <DownOutlined />
-            </Button>
-          </Dropdown>
-          <Dropdown menu={(
-            <Menu>
-              <Menu.Item key="resource1">Resource 1</Menu.Item>
-              <Menu.Item key="resource2">Resource 2</Menu.Item>
-            </Menu>
-          )}>
-            <Button type="link" ref={dropdownRef}>
-              Resources <DownOutlined />
-            </Button>
-          </Dropdown> */}
-          <Link to="/create-post" style={{ marginLeft: '16px' }}>
-            <Button type="link" icon={<EditOutlined />}>Write</Button>
-          </Link>
+          {user ? (
+            <Link to="/create-post" style={{ marginLeft: '16px' }}>
+              <Button type="link" icon={<EditOutlined />}>Write</Button>
+            </Link>
+          ) : (
+            <Tooltip title="Please log in to write a post">
+              <Button type="link" icon={<EditOutlined />} disabled>Write</Button>
+            </Tooltip>
+          )}
         </nav>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {user ? (
