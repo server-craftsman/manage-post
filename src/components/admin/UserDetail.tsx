@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getUserById, deleteUser } from '../../services/auth';
 import { IUser } from '../../models/Users';
-import { Link } from 'react-router-dom';
 import { ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const UserDetail = () => {
@@ -29,7 +28,6 @@ const UserDetail = () => {
     const handleDeleteUser = async (id: string) => {
         console.log("user", id);
         await deleteUser(id);
-        navigate('/admin/manage-users');
         if (dataSource) {
             setDataSource(null);
         }
@@ -76,9 +74,7 @@ const UserDetail = () => {
                             <p><strong>Create At:</strong> {new Date(dataSource.createDate).toLocaleDateString()}</p>
                             <p><strong>Update At:</strong> {new Date(dataSource.updateDate).toLocaleDateString()}</p>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
-                                <Link to={`/admin/manage-users`}>
-                                    <Button type="default" icon={<ArrowLeftOutlined />} style={{ backgroundColor: "#0000FF", borderColor: "#0000FF", marginRight: "10px", color: "#fff", fontWeight: "bold", padding: "10px 20px", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }}>Back to Users</Button>
-                                </Link>
+                                <Button type="default" icon={<ArrowLeftOutlined />} style={{ backgroundColor: "#0000FF", borderColor: "#0000FF", marginRight: "10px", color: "#fff", fontWeight: "bold", padding: "10px 20px", borderRadius: "10px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }} onClick={() => navigate('/admin/manage-users')}>Back to Users</Button>
                                 <Popconfirm
                                     title="Delete the user"
                                     description="Are you sure to delete this user?"
