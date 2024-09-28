@@ -84,8 +84,9 @@ export const updatePost = async (post: IPost): Promise<IPost> => {
   return response.data;
 };
 
+//test services
 export const getPostsByUserId = async (userId: string): Promise<IPost[]> => {
-  const response = await axiosInstance.get<IPost[]>(`${API_URL}`);
+  const response = await axiosInstance.get<IPost[]>(`${API_URL}/posts?userId=${userId}`);
   if (!response.data) {
     throw new Error('Failed to fetch posts by user');
   }
