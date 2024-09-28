@@ -18,6 +18,7 @@ const PostDetails = lazy(() => import('./components/admin/PostDetails'));
 const CustomerProfile = lazy(() => import('./components/customer/profile/CustomerProfile'));
 const CreatePost = lazy(() => import('./components/customer/posts/CreatePost'));
 const HistoryPost = lazy(() => import('./components/customer/posts/HistoryPosts'));
+const Notification = lazy(() => import('./components/admin/Notification'));
 const App: React.FC = () => {
   const router = createBrowserRouter([
     {
@@ -85,6 +86,10 @@ const App: React.FC = () => {
         {
           path: 'post-detail/:id',
           element: <Suspense fallback={<div>Loading...</div>}><PostDetails /></Suspense>,
+        },
+        {
+          path: 'notification',
+          element: <Suspense fallback={<div>Loading...</div>}><Notification /></Suspense>
         }
       ],
     },

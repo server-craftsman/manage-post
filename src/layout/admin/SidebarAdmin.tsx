@@ -39,7 +39,7 @@ const SidebarAdmin: React.FC = () => {
     {
       key: '5',
       icon: <NotificationOutlined style={{ color: '#000000' }} />,
-      label: 'Notifications',
+      label: <Link to="/admin/notification">Notification</Link>,
     },
     {
       key: '7',
