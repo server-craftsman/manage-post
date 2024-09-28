@@ -107,3 +107,11 @@ export const getPostsByCategoryAndUserId = async (category: string, userId: stri
   }
   return response.data;
 };
+
+export const getPostCountByUserId = async (userId: string): Promise<number> => {
+  const response = await axiosInstance.get<number>(`${API_URL}/user/${userId}/count`);
+  if (response.status !== 200) {
+    throw new Error('Failed to fetch post count');
+  }
+  return response.data;
+};

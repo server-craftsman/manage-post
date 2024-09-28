@@ -17,6 +17,7 @@ interface AuthContextType {
   updatePost: (post: IPost) => Promise<void>;
   deletePost: (id: string) => Promise<void>;
   setPosts: (posts: IPost[]) => void;
+  getPostCountByUserId: (userId: string) => Promise<number>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -155,8 +156,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const getPostCountByUserId = async (userId: string) => {
+    try {
+      const postCount = await postService.getPostCountByUserId(userId);
+      return postCount;
+    } catch (error) {
+      console.error('Failed to fetch post count by user', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, createPost, updatePost, deletePost, setPosts }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, createPost, updatePost, deletePost, setPosts, getPostCountByUserId }}>
       {children}
     </AuthContext.Provider>
   );

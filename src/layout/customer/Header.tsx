@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/customer/Searchbar';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar, Button, Dropdown, Layout } from 'antd';
-import { UserOutlined, LogoutOutlined, EditOutlined } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined, EditOutlined, HistoryOutlined } from '@ant-design/icons';
 import { IPost } from '../../models/Posts';
 import { fetchPosts } from '../../services/posts';
 import type { MenuProps } from 'antd';
@@ -31,13 +31,17 @@ const CustomHeader = () => {
     setSearchResults([]);
   };
 
-  useMemo(async () => {
-    try {
-      const results = await fetchPosts();
-      setAllPosts(results);
-    } catch (error) {
-      console.error('Failed to fetch all posts:', error);
-    }
+  useEffect(() => {
+    const fetchAllPosts = async () => {
+      try {
+        const results = await fetchPosts();
+        setAllPosts(results);
+      } catch (error) {
+        console.error('Failed to fetch all posts:', error);
+      }
+    };
+
+    fetchAllPosts();
   }, []);
 
   const menuItems: MenuProps['items'] = [
@@ -45,6 +49,11 @@ const CustomHeader = () => {
       key: 'profile',
       icon: <UserOutlined />,
       label: <Link to="/profile">Profile</Link>,
+    },
+    {
+      key: 'history',
+      icon: <HistoryOutlined />,
+      label: <Link to="/history">History Post</Link>,
     },
     {
       key: 'logout',
