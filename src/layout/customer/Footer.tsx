@@ -26,9 +26,15 @@ const Footer = () => {
                   Home
                 </Link>
               </li>
-              <li className="mb-2"><a href="#" className="text-gray-400 hover:text-white">Products</a></li>
-              <li className="mb-2"><a href="#" className="text-gray-400 hover:text-white">Resources</a></li>
-              <li className="mb-2"><a href="#" className="text-gray-400 hover:text-white">Pricing</a></li>
+              <Link 
+              to="/create-post" 
+              className="text-gray-400 hover:text-white" 
+              onClick={() => {
+                    window.scrollTo(0, 0);
+                  }}>
+                    Write
+              </Link>
+              
             </ul>
           </div>
           <div className="w-full md:w-1/3">
