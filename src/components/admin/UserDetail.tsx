@@ -5,9 +5,12 @@ import { getUserById, deleteUser } from '../../services/auth';
 import { IUser } from '../../models/Users';
 import { ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 import { message } from 'antd';
+import * as postService from '../../services/posts'; // Import postService
+
 const UserDetail = () => {
     const [dataSource, setDataSource] = useState<IUser | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [postCount, setPostCount] = useState<number>(0); // State for post count
     const navigate = useNavigate();
     let { id } = useParams();
 
@@ -16,6 +19,10 @@ const UserDetail = () => {
             try {
                 const user = await getUserById(id!);
                 setDataSource(user);
+                // Fetch user posts and count them
+                const allPosts = await postService.getAllPosts();
+                const userPosts = allPosts.filter(post => post.userId === user.id);
+                setPostCount(userPosts.length);
             } catch (error) {
                 console.error('Failed to fetch user', error);
             } finally {
@@ -95,6 +102,11 @@ const UserDetail = () => {
                     }
                 />
             </Card>
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                <p><strong>Number of Posts:</strong> {postCount}</p>
+                <Button type="primary" style={{ marginRight: '10px' }}>View Posts</Button>
+                <Button type="default">Search Posts</Button>
+            </div>
         </div>
     )
 }
