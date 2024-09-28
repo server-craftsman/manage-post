@@ -7,6 +7,7 @@ import { Dayjs } from 'dayjs';
 import 'moment/locale/vi';
 import { motion } from 'framer-motion';
 import { getAllPosts } from '../../services/posts';
+import PaginationComponent from '../PaginationComponent';
 moment.locale('vi');
 
 const { Title, Text } = Typography;
@@ -19,6 +20,8 @@ const Notification: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment] | null>(null);
   const [filter, setFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const postsPerPage = 5;
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -62,6 +65,14 @@ const Notification: React.FC = () => {
     return true;
   });
 
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredNotifications.slice(indexOfFirstPost, indexOfLastPost);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -97,38 +108,46 @@ const Notification: React.FC = () => {
         {filteredNotifications.length === 0 ? (
           <Alert message="No notifications found." type="info" showIcon style={{ borderRadius: '10px' }} />
         ) : (
-          <List
-            itemLayout="horizontal"
-            dataSource={filteredNotifications}
-            renderItem={notification => (
-              <List.Item
-                style={{ padding: '30px', backgroundColor: '#ffffff', borderRadius: '20px', boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)', marginBottom: '30px', border: '1px solid #e8e8e8', transition: 'all 0.3s ease' }}
-              >
-                <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={notification.postImage || 'https://via.placeholder.com/150'}
-                      alt="Post Image"
-                      style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
-                    />
-                  }
-                  title={<Text strong style={{ fontSize: '22px', color: '#1890ff', textShadow: '1px 1px 2px rgba(0,0,0,0.05)' }}>{notification.title}</Text>}
-                  description={
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <Text style={{ fontSize: '16px', color: '#333' }}>{notification.description}</Text>
-                      <Tag color={notification.status === 'published' ? 'green' : notification.status === 'draft' ? 'orange' : 'blue'} style={{ alignSelf: 'flex-start', padding: '5px 10px', borderRadius: '15px' }}>
-                        {notification.status.charAt(0).toUpperCase() + notification.status.slice(1)}
-                      </Tag>
-                      <Text type="secondary" style={{ fontSize: '14px' }}>
-                        <ClockCircleOutlined style={{ marginRight: '5px' }} />
-                        Created At: {moment(notification.createDate).format('DD/MM/YYYY HH:mm:ss')}
-                      </Text>
-                    </div>
-                  }
-                />
-              </List.Item>
-            )}
-          />
+          <>
+            <List
+              itemLayout="horizontal"
+              dataSource={currentPosts}
+              renderItem={notification => (
+                <List.Item
+                  style={{ padding: '30px', backgroundColor: '#ffffff', borderRadius: '20px', boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)', marginBottom: '30px', border: '1px solid #e8e8e8', transition: 'all 0.3s ease' }}
+                >
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar
+                        src={notification.postImage || 'https://via.placeholder.com/150'}
+                        alt="Post Image"
+                        style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+                      />
+                    }
+                    title={<Text strong style={{ fontSize: '22px', color: '#1890ff', textShadow: '1px 1px 2px rgba(0,0,0,0.05)' }}>{notification.title}</Text>}
+                    description={
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <Text style={{ fontSize: '16px', color: '#333' }}>{notification.description}</Text>
+                        <Tag color={notification.status === 'published' ? 'green' : notification.status === 'draft' ? 'orange' : 'blue'} style={{ alignSelf: 'flex-start', padding: '5px 10px', borderRadius: '15px' }}>
+                          {notification.status.charAt(0).toUpperCase() + notification.status.slice(1)}
+                        </Tag>
+                        <Text type="secondary" style={{ fontSize: '14px' }}>
+                          <ClockCircleOutlined style={{ marginRight: '5px' }} />
+                          Created At: {moment(notification.createDate).format('DD/MM/YYYY HH:mm:ss')}
+                        </Text>
+                      </div>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+            <PaginationComponent
+              currentPage={currentPage}
+              postsPerPage={postsPerPage}
+              totalPosts={filteredNotifications.length}
+              onPageChange={handlePageChange}
+            />
+          </>
         )}
       </div>
     </motion.div>

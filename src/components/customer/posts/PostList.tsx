@@ -3,7 +3,7 @@ import { Spin, Alert, Row, Col, Typography } from 'antd';
 import { IPost } from '../../../models/Posts';
 import PostType from './PostType';
 import { fetchPosts } from '../../../services/posts';
-import PaginationComponent from './PaginationComponent';
+import PaginationComponent from '../../PaginationComponent';
 
 const { Title } = Typography;
 
