@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Upload } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { IUser } from '../../models/Users';
 import { v4 as uuidv4 } from 'uuid';
-import Compressor from 'compressorjs'; // Import Compressor.js
 import { motion } from 'framer-motion'; // Import framer-motion
 import { Rule } from 'antd/lib/form'; // Import the Rule type from antd
 const Register = () => {
@@ -14,6 +13,19 @@ const Register = () => {
   const [fileList, setFileList] = useState<any[]>([]);
   const [emailError, setEmailError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (avatarFile) {
+      setFileList([
+        {
+          uid: '-1',
+          name: 'avatar',
+          status: 'done',
+          url: URL.createObjectURL(avatarFile),
+        },
+      ]);
+    }
+  }, [avatarFile]);
 
   const onFinish = async (values: { name: string; username: string; email: string; password: string; confirmPassword: string }) => {
     try {
@@ -69,6 +81,20 @@ const Register = () => {
     } catch (err) {
       setEmailError('Failed to check email');
     }
+  };
+
+  const handleAvatarChange = (info: any) => {
+    const isImage = info.file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('You can only upload image files!');
+      return;
+    }
+    const isLt1024GB = info.file.size / 1024 / 1024 / 1024 < 1024;
+    if (!isLt1024GB) {
+      message.error('Image must be smaller than 1024GB!');
+      return;
+    }
+    setAvatarFile(info.file);
   };
 
   const getValidationRules = () => {
@@ -178,45 +204,40 @@ const Register = () => {
                 name="avatar"
                 rules={validationRules.avatar}
               >
-                <Upload
-                  name="avatar"
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  fileList={fileList}
-                  beforeUpload={(file) => {
-                    const isImage = file.type.startsWith('image/');
-                    if (!isImage) {
-                      message.error('You can only upload image files!');
-                      return Upload.LIST_IGNORE;
-                    }
-                    const isLt1024GB = file.size / 1024 / 1024 / 1024 < 1024;
-                    if (!isLt1024GB) {
-                      message.error('Image must be smaller than 1024GB!');
-                      return Upload.LIST_IGNORE;
-                    }
-                    new Compressor(file, {
-                      quality: 0.5, // Adjust the quality as needed
-                      success: (compressedFile) => {
-                        setAvatarFile(compressedFile as File); // Set the compressed file to state
-                        setFileList([compressedFile]); // Update fileList state
-                      },
-                      error: () => {
-                        message.error('Failed to compress image. Please try again.');
-                      },
-                    });
-                    return false;
-                  }}
-                >
-                  {avatarFile ? (
-                    <img src={URL.createObjectURL(avatarFile)} alt="avatar" style={{ width: '100%' }} />
-                  ) : (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
+                <div style={{ display: 'flex', justifyContent: 'left' }}>
+                  <div style={{marginRight: '10px'}}>
+                    <Upload
+                      name="avatar"
+                      listType="picture-card"
+                      beforeUpload={() => false}
+                      onChange={handleAvatarChange}
+                      fileList={fileList}
+                      showUploadList={false}
+                      style={{ width: '100%' }}
+                    >
+                      <Button style={{ width: '100%', height: '100%', borderRadius: '5px'}} icon={<UploadOutlined />}></Button>
+                    </Upload>
+                  </div>
+                  {fileList.length > 0 && (
+                    <div style={{marginBottom: '20px', marginLeft: '10px'}}>
+                      <img
+                        src={fileList[0].url}
+                        alt="avatar"
+                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '50%' }}
+                      />
+                      <Button
+                        type="link"
+                        onClick={() => {
+                          setAvatarFile(null);
+                          setFileList([]);
+                        }}
+                        style={{ display: 'block', marginTop: '10px' }}
+                      >
+                        <DeleteOutlined /> Remove
+                      </Button>
                     </div>
                   )}
-                </Upload>
+                </div>
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" className="w-full">

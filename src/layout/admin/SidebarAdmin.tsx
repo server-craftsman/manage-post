@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Badge } from 'antd';
 import {
   NotificationOutlined,
   SettingOutlined,
@@ -11,9 +11,12 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 const { Sider } = Layout;
 import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../../context/NotificationContext';
+
 const SidebarAdmin: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { newNotificationsCount } = useNotification();
 
   const handleLogout = async () => {
     await logout();
@@ -38,7 +41,11 @@ const SidebarAdmin: React.FC = () => {
     },
     {
       key: '5',
-      icon: <NotificationOutlined style={{ color: '#000000' }} />,
+      icon: (
+        <Badge count={newNotificationsCount} offset={[10, 0]}>
+          <NotificationOutlined style={{ color: '#000000' }} />
+        </Badge>
+      ),
       label: <Link to="/admin/notification">Notification</Link>,
     },
     {

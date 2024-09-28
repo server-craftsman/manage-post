@@ -210,7 +210,7 @@ const HistoryPost: React.FC = () => {
             >
               <List.Item.Meta
                 avatar={<Image src={post.postImage} alt={post.title} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '50%' }} />}
-                title={<Title level={4} style={{ marginBottom: '0', color: '#1890ff' }}>{post.title}</Title>}
+                title={<Text strong style={{ fontSize: '18px', color: '#1890ff' }}>{post.title}</Text>}
                 description={
                   <>
                     <Text>{post.description}</Text>

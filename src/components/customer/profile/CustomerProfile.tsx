@@ -1,22 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Descriptions, Avatar, Button, Modal, Form, Input, Upload, message } from "antd";
 import { useAuth } from "../../../context/AuthContext";
 import { IUser } from "../../../models/Users";
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import { HomeOutlined } from '@ant-design/icons';
-import Compressor from 'compressorjs'; // Import Compressor.js
 import { Rule } from 'antd/es/form';
+
 const CustomerProfile: React.FC = () => {
-  const { user, updateUser, checkEmailExists } = useAuth(); // Add checkEmailExists
+  const { user, updateUser } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
-  const [emailError, setEmailError] = useState<string | null>(null); // Add emailError state
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isModalVisible && user && user.avatar) {
+      setFileList([
+        {
+          uid: '-1',
+          name: 'avatar',
+          status: 'done',
+          url: typeof user.avatar === "string" ? user.avatar : undefined,
+        },
+      ]);
+    }
+  }, [isModalVisible, user]);
+
+  useEffect(() => {
+    if (avatarFile) {
+      setFileList([
+        {
+          uid: '-1',
+          name: 'avatar',
+          status: 'done',
+          url: URL.createObjectURL(avatarFile),
+        },
+      ]);
+    }
+  }, [avatarFile]);
+
   if (!user) {
     return <div>Please log in to view your profile.</div>;
   }
@@ -35,40 +61,37 @@ const CustomerProfile: React.FC = () => {
       const values = await form.validateFields();
 
       if (avatarFile) {
-        const formData = new FormData();
-        formData.append('avatar', avatarFile);
-        formData.append('name', values.name);
-        formData.append('email', values.email);
-        formData.append('updateDate', new Date().toISOString());
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          if (e.target && e.target.result) {
+            const base64String = e.target.result as string;
+            const updatedData: IUser = {
+              ...user,
+              ...values,
+              avatar: base64String,
+              updateDate: new Date().toISOString(),
+            };
 
-        const updatedData: IUser = {
-          ...user,
-          ...values,
-          avatar: URL.createObjectURL(avatarFile),
-          updateDate: new Date().toISOString(), // Update the date to current time
-        };
-
-        try {
-          await updateUser(updatedData);
-          setIsModalVisible(false);
-          form.resetFields(); // Reset form fields after updating profile
-          message.success('Profile updated successfully!');
-        } catch (error) {
-          if (error instanceof Error && error.message === 'Payload Too Large') {
-            message.error('Avatar file is too large. Please upload a smaller file.');
-          } else {
-            message.error('Failed to update profile.');
+            try {
+              await updateUser(updatedData);
+              setIsModalVisible(false);
+              form.resetFields();
+              message.success('Profile updated successfully!');
+            } catch (error) {
+              message.error('Failed to update profile.');
+            }
           }
-        }
+        };
+        reader.readAsDataURL(avatarFile);
       } else {
         const updatedData: IUser = {
           ...user,
           ...values,
-          updateDate: new Date().toISOString(), // Update the date to current time
+          updateDate: new Date().toISOString(),
         };
         await updateUser(updatedData);
         setIsModalVisible(false);
-        form.resetFields(); // Reset form fields after updating profile
+        form.resetFields();
         message.success('Profile updated successfully!');
       }
     } catch (error) {
@@ -79,17 +102,15 @@ const CustomerProfile: React.FC = () => {
   const handlePasswordChange = async () => {
     try {
       const values = await passwordForm.validateFields();
-      // Assuming your updateUser function can take the updated user object
-      await updateUser({ ...user, password: values.newPassword }); // Update the password in the user object
+      await updateUser({ ...user, password: values.newPassword });
       setIsPasswordModalVisible(false);
-      passwordForm.resetFields(); // Reset password form fields after password change
+      passwordForm.resetFields();
       message.success('Password changed successfully!');
     } catch (error) {
       console.error("Failed to validate password form:", error);
     }
   };
 
-  // Validation function for confirming passwords
   const confirmPasswordValidator = (getFieldValue: (name: string) => any) => ({
     validator(_: any, value: string) {
       if (!value || getFieldValue("newPassword") === value) {
@@ -110,30 +131,7 @@ const CustomerProfile: React.FC = () => {
       message.error('Image must be smaller than 1024GB!');
       return;
     }
-    new Compressor(info.file, {
-      quality: 0.5, // Adjust the quality as needed
-      success: (compressedFile) => {
-        setAvatarFile(compressedFile as File); // Set the compressed file to state
-        setFileList([compressedFile]); // Update fileList state
-      },
-      error: () => {
-        message.error('Failed to compress image. Please try again.');
-      },
-    });
-  };
-
-  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const email = e.target.value;
-    try {
-      const emailExists = await checkEmailExists(email);
-      if (emailExists) {
-        setEmailError('Email already exists. Please use another email.');
-      } else {
-        setEmailError(null);
-      }
-    } catch (err) {
-      setEmailError('Failed to check email');
-    }
+    setAvatarFile(info.file);
   };
 
   const getValidationRules = (field: string) => {
@@ -145,18 +143,7 @@ const CustomerProfile: React.FC = () => {
         ];
       case 'email':
         return [
-          { required: true, type: "email", message: "Please input a valid email!" },
-          { validator: async (_: any, value: string) => { // Explicitly type '_'
-              if (value) {
-                const emailExists = await checkEmailExists(value);
-                if (emailExists) {
-                  setEmailError('Email already exists. Please use another email.');
-                  return Promise.reject();
-                }
-              }
-              return Promise.resolve();
-            }
-          }
+          { required: true, type: "email", message: "Please input a valid email!" }
         ];
       case 'avatar':
         return [
@@ -181,7 +168,7 @@ const CustomerProfile: React.FC = () => {
     }
   };
 
-  return (
+  const renderProfileContent = () => (
     <div className="container mx-auto px-4 py-8">
       <Card style={{ width: "100%", borderRadius: "15px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
         <div className="flex items-center mb-4">
@@ -253,9 +240,8 @@ const CustomerProfile: React.FC = () => {
             name="email"
             rules={getValidationRules('email') as Rule[]}
           >
-            <Input onChange={handleEmailChange} />
+            <Input />
           </Form.Item>
-          {emailError && <p className="text-red-500">{emailError}</p>}
 
           <Form.Item
             label="Upload Avatar"
@@ -276,22 +262,25 @@ const CustomerProfile: React.FC = () => {
                   <Button style={{ width: '100%', height: '100%', borderRadius: '5px'}} icon={<UploadOutlined />}></Button>
                 </Upload>
               </div>
-            {fileList.length > 0 && (
-              <div style={{marginBottom: '20px', marginLeft: '10px'}}>
-                <img
-                  src={URL.createObjectURL(fileList[0])}
-                  alt="avatar"
-                  style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '50%' }}
-                />
-                <Button
-                  type="link"
-                  onClick={() => setFileList([])}
-                  style={{ display: 'block', marginTop: '10px' }}
-                >
-                  Remove
-                </Button>
-              </div>
-            )}
+              {fileList.length > 0 && (
+                <div style={{marginBottom: '20px', marginLeft: '10px'}}>
+                  <img
+                    src={fileList[0].url}
+                    alt="avatar"
+                    style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '50%' }}
+                  />
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setAvatarFile(null);
+                      setFileList([]);
+                    }}
+                    style={{ display: 'block', marginTop: '10px' }}
+                  >
+                    <DeleteOutlined /> Remove
+                  </Button>
+                </div>
+              )}
             </div>
           </Form.Item>
         </Form>
@@ -335,6 +324,8 @@ const CustomerProfile: React.FC = () => {
       </Modal>
     </div>
   );
+
+  return renderProfileContent();
 };
 
 export default CustomerProfile;

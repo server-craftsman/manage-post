@@ -13,10 +13,12 @@ interface AuthContextType {
   updateUser: (userData: IUser) => Promise<void>;
   error?: string;
   posts: IPost[];
+  getPostById: (id: string) => Promise<IPost>;
   createPost: (post: IPost, postImage?: File) => Promise<void>;
   updatePost: (post: IPost) => Promise<void>;
   deletePost: (id: string) => Promise<void>;
   setPosts: (posts: IPost[]) => void;
+  getUserById: (id: string) => Promise<IUser>;
   getPostCountByUserId: (userId: string) => Promise<number>;
   createUser: (userData: IUser) => Promise<IUser | null>;
   checkEmailExists: (email: string) => Promise<boolean>;
@@ -65,12 +67,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       if (err instanceof AxiosError) {
         setError(err.response?.data?.message || 'An error occurred during login');
+      } else if (err instanceof Error) {
+        setError(err.message || 'An unexpected error occurred');
       } else {
-        if (err instanceof Error) {
-          setError(err.message || 'An unexpected error occurred');
-        } else {
-          setError('An unexpected error occurred');
-        }
+        setError('An unexpected error occurred');
       }
       throw err;
     }
@@ -123,6 +123,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError('Failed to create user');
       return null; // Return null on error
     }
+  };
+
+  const getPostById = async (id: string): Promise<IPost> => {
+    const post = await postService.getPostById(id);
+    return post;
   };
 
   const createPost = async (post: IPost, postImage?: File) => {
@@ -181,6 +186,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const getUserById = async (id: string): Promise<IUser> => {
+    try {
+      const user = await authService.getUserById(id);
+      return user;
+    } catch (error) {
+      console.error('Failed to fetch user', error);
+      throw error;
+    }
+  };
+
   const getPostCountByUserId = async (userId: string) => {
     try {
       const postCount = await postService.getPostCountByUserId(userId);
@@ -197,7 +212,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, createPost, updatePost, deletePost, setPosts, getPostCountByUserId, createUser, checkEmailExists }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, getPostById, createPost, updatePost, deletePost, setPosts, getPostCountByUserId, createUser, checkEmailExists, getUserById }}>
       {children}
     </AuthContext.Provider>
   );

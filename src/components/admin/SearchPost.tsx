@@ -1,7 +1,8 @@
 import React from 'react';
-import { Input, DatePicker, Select, message } from 'antd';
+import { Input, DatePicker, Select, message, Row, Col } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import { SearchOutlined } from '@ant-design/icons';
+
 const { Option } = Select;
 
 interface SearchPostProps {
@@ -25,72 +26,107 @@ const SearchPost: React.FC<SearchPostProps> = ({
   selectedStatus,
   setSelectedStatus
 }) => {
+  const currentDate = dayjs();
+  const hundredYearsAgo = currentDate.subtract(100, 'year');
 
-    const currentDate = dayjs();
-    const hundredYearsAgo = currentDate.subtract(100, 'year');
+  const handleEndDateChange = (date: Dayjs | null) => {
+    if (!selectedStartDate) {
+      message.warning('Please select a Start Date first.');
+      setSelectedEndDate(null);
+      return;
+    }
 
-    const handleEndDateChange = (date: Dayjs | null) => {
-        if (!selectedStartDate) {
-          message.warning('Please select a Start Date first.');
-          setSelectedEndDate(null); // Reset the end date if no start date is selected
-          return;
-        }
-    
-        if (date && date.isBefore(selectedStartDate, 'day')) {
-          message.warning('End Date should be greater than or equal to Start Date');
-          setSelectedEndDate(null); // Reset the end date if it's invalid
-        } else {
-          setSelectedEndDate(date);
-        }
-      };
+    if (date && date.isBefore(selectedStartDate, 'day')) {
+      message.warning('End Date should be greater than or equal to Start Date');
+      setSelectedEndDate(null);
+    } else {
+      setSelectedEndDate(date);
+    }
+  };
 
-      const handleStartDateChange = (date: Dayjs | null) => {
-        if (date && date.isAfter(currentDate)) {
-          message.warning('Start Date cannot be in the future.');
-          setSelectedStartDate(null);
-        } else {
-          setSelectedStartDate(date);
-        }
-      };
+  const handleStartDateChange = (date: Dayjs | null) => {
+    if (date && date.isAfter(currentDate)) {
+      message.warning('Start Date cannot be in the future.');
+      setSelectedStartDate(null);
+    } else {
+      setSelectedStartDate(date);
+    }
+  };
 
-      const disableStartDate = (date: Dayjs) => {
-        return date.isBefore(hundredYearsAgo, 'day');
-      };
+  const disableStartDate = (date: Dayjs) => {
+    return date.isBefore(hundredYearsAgo, 'day');
+  };
 
   return (
-    <div className="mb-4">
+    <div style={{ 
+      padding: '24px',
+      backgroundColor: '#f8f9fa',
+      borderRadius: '12px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      marginBottom: '24px'
+    }}>
       <Input
         placeholder="Search by Title or Description"
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
-        className="mb-2"
         prefix={<SearchOutlined />}
+        style={{
+          marginBottom: '16px',
+          height: '48px',
+          borderRadius: '8px',
+          fontSize: '16px'
+        }}
       />
-      <div className="flex mb-2">
-        <DatePicker
-          value={selectedStartDate}
-          onChange={handleStartDateChange}
-          placeholder="Start Date"
-          className="mr-2"
-          disabledDate={disableStartDate} // Disable dates more than 100 years ago
-        />
-        <DatePicker
-          value={selectedEndDate}
-          onChange={handleEndDateChange} // Use the new handler here
-          placeholder="End Date"
-        />
-      </div>
+      <Row gutter={16} style={{ marginBottom: '16px' }}>
+        <Col span={12}>
+          <DatePicker
+            value={selectedStartDate}
+            onChange={handleStartDateChange}
+            placeholder="Start Date"
+            disabledDate={disableStartDate}
+            style={{
+              width: '100%',
+              height: '48px',
+              borderRadius: '8px',
+              fontSize: '16px'
+            }}
+          />
+        </Col>
+        <Col span={12}>
+          <DatePicker
+            value={selectedEndDate}
+            onChange={handleEndDateChange}
+            placeholder="End Date"
+            style={{
+              width: '100%',
+              height: '48px',
+              borderRadius: '8px',
+              fontSize: '16px'
+            }}
+          />
+        </Col>
+      </Row>
       <Select
         placeholder="Select status"
         value={selectedStatus}
         onChange={(value) => setSelectedStatus(value)}
-        className="mb-2"
-        style={{ width: 200 }}
+        style={{
+          width: '100%',
+          height: '48px',
+          borderRadius: '8px',
+          fontSize: '16px'
+        }}
       >
         <Option value="">All</Option>
-        <Option value="published" style={{ color: 'green' }}>Published</Option>
-        <Option value="draft" style={{ color: 'red' }}>Draft</Option>
-        <Option value="private"style={{ color: 'orange' }}>Private</Option>
+        <Option value="published">
+          <span style={{ color: 'green' }}>Published</span>
+        </Option>
+        <Option value="draft">
+          <span style={{ color: 'red' }}>Draft</span>
+        </Option>
+        <Option value="private">
+          <span style={{ color: 'orange' }}>Private</span>
+        </Option>
       </Select>
     </div>
   );

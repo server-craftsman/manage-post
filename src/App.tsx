@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import React, { Suspense, lazy } from 'react';
 import './axiosConfig';
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 const AdminLayout = lazy(() => import('./layout/admin/AdminLayout'));
 const CustomerLayout = lazy(() => import('./layout/customer/CustomerLayout'));
 const Home = lazy(() => import('./pages/customers/Home'));
@@ -97,9 +98,11 @@ const App: React.FC = () => {
 
   return (  
     <Suspense fallback={<div>Loading...</div>}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
+        <AuthProvider>
+          <NotificationProvider>
+          <RouterProvider router={router} />
+          </NotificationProvider>
+        </AuthProvider>
     </Suspense>
   );
 };

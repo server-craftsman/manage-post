@@ -4,9 +4,9 @@ import { Table, Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 interface ManageBlogsProps {
-  posts: IPost[]; // Receive posts as props
-  loading: boolean; // Receive loading state
-  error: string | null; // Receive error state
+  posts: IPost[];
+  loading: boolean;
+  error: string | null;
 }
 
 const ManageBlogs: React.FC<ManageBlogsProps> = ({ posts, loading, error }) => {
@@ -37,7 +37,7 @@ const ManageBlogs: React.FC<ManageBlogsProps> = ({ posts, loading, error }) => {
       <Table dataSource={posts} rowKey="id" className="min-w-full bg-white">
         <Table.Column title="ID" dataIndex="id" key="id" className="py-2 px-4 border-b" />
         <Table.Column title="Title" dataIndex="title" key="title" className="py-2 px-4 border-b" />
-        <Table.Column title="Author" dataIndex="userId" key="userId" className="py-2 px-4 border-b" />
+        <Table.Column title="Author ID" dataIndex="userId" key="userId" className="py-2 px-4 border-b" />
         <Table.Column title="Created At" dataIndex="createDate" key="createDate" className="py-2 px-4 border-b" render={(text) => new Date(text).toLocaleDateString()} />
         <Table.Column
           title="Actions"
