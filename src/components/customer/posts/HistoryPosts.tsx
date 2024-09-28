@@ -7,7 +7,6 @@ import { CheckCircleOutlined, CloseCircleOutlined, SyncOutlined, EditOutlined, D
 import moment, { Moment } from 'moment';
 import { Dayjs } from 'dayjs';
 import 'moment/locale/vi';
-import Compressor from 'compressorjs';
 import { motion } from 'framer-motion';
 moment.locale('vi');
 
@@ -24,7 +23,7 @@ const HistoryPost: React.FC = () => {
   const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment] | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [currentPost, setCurrentPost] = useState<IPost | null>(null);
-  const [postImage, setPostImage] = useState<File | null>(null);
+  const [postImage, setPostImage] = useState<string | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
 
   useEffect(() => {
@@ -62,15 +61,19 @@ const HistoryPost: React.FC = () => {
   const handleEditPost = (post: IPost) => {
     setCurrentPost(post);
     setIsModalVisible(true);
+    setFileList(post.postImage ? [{ uid: '-1', name: 'image.png', status: 'done', url: post.postImage }] : []);
+    message.info('Editing post...');
   };
 
   const handleDeletePost = async (postId: string) => {
     try {
       await postService.deletePost(postId);
       setPosts(posts.filter(post => post.id !== postId));
+      message.success('Post deleted successfully');
     } catch (err) {
       setError('Failed to delete post');
       console.error('Failed to delete post', err);
+      message.error('Failed to delete post');
     }
   };
 
@@ -81,10 +84,12 @@ const HistoryPost: React.FC = () => {
         const updatedPost = { ...postToUpdate, status, updateDate: new Date() };
         await postService.updatePost(updatedPost);
         setPosts(posts.map(post => (post.id === postId ? updatedPost : post)));
+        message.success(`Post status updated to ${status}`);
       }
     } catch (err) {
       setError('Failed to update post status');
       console.error('Failed to update post status', err);
+      message.error('Failed to update post status');
     }
   };
 
@@ -93,14 +98,9 @@ const HistoryPost: React.FC = () => {
       try {
         const updatedPost = { ...currentPost, ...values, updateDate: new Date() };
         if (postImage) {
-          const compressedImage = await new Promise<File>((resolve, reject) => {
-            new Compressor(postImage, {
-              quality: 0.6,
-              success: (file: File) => resolve(file),
-              error: reject,
-            });
-          });
-          updatedPost.postImage = URL.createObjectURL(compressedImage);
+          updatedPost.postImage = postImage;
+        } else if (fileList.length === 0) {
+          updatedPost.postImage = null;
         }
         await postService.updatePost(updatedPost);
         setPosts(posts.map(post => (post.id === currentPost.id ? updatedPost : post)));
@@ -108,9 +108,11 @@ const HistoryPost: React.FC = () => {
         setCurrentPost(null);
         setPostImage(null);
         setFileList([]);
+        message.success('Post updated successfully');
       } catch (err) {
         setError('Failed to update post');
         console.error('Failed to update post', err);
+        message.error('Failed to update post');
       }
     }
   };
@@ -123,10 +125,34 @@ const HistoryPost: React.FC = () => {
   };
 
   const handleImageChange = (info: any) => {
-    if (info.file.status === 'done') {
-      setPostImage(info.file.originFileObj);
+    const isImage = info.file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('You can only upload image files!');
+      return;
     }
-    setFileList(info.fileList);
+    const isLt1024MB = info.file.size / 1024 / 1024 < 1024;
+    if (!isLt1024MB) {
+      message.error('Image must be smaller than 1024MB!');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPostImage(e.target?.result as string);
+      setFileList([
+        {
+          uid: '-1',
+          name: 'image',
+          status: 'done',
+          url: e.target?.result as string,
+        },
+      ]);
+    };
+    reader.readAsDataURL(info.file);
+  };
+
+  const handleRemoveImage = () => {
+    setPostImage(null);
+    setFileList([]);
   };
 
   const filteredPosts = posts.filter(post => {
@@ -256,45 +282,41 @@ const HistoryPost: React.FC = () => {
           <Form.Item
             name="postImage"
             label="Post Image"
+            rules={[{ required: true, message: 'Please upload an image for the post!' }]}
           >
-            <Upload
-              name="postImage"
-              listType="picture-card"
-              className="avatar-uploader"
-              showUploadList={false}
-              beforeUpload={(file) => {
-                if (!file.type.startsWith('image/')) {
-                  message.error('You can only upload image files!');
-                  return Upload.LIST_IGNORE;
-                }
-                setPostImage(file);
-                return false;
-              }}
-              onChange={handleImageChange}
-              fileList={fileList} // Use fileList instead of value
-              disabled={!!postImage} // Disable upload button after image is uploaded
-            >
-              {!postImage ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                  <UploadOutlined style={{ fontSize: '24px', color: '#000000' }} />
-                  <div style={{ marginTop: 8, color: '#000000' }}>Upload</div>
-                </div>
-              ) : (
-                <div style={{ position: 'relative', width: '100%', paddingTop: '100%', overflow: 'hidden', borderRadius: '15px' }}>
-                  <img src={URL.createObjectURL(postImage)} alt="post" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <Button
-                    type="link"
-                    onClick={() => {
-                      setPostImage(null);
-                      setFileList([]);
-                    }}
-                    style={{ color: '#fff', fontSize: 20, position: 'absolute', top: 0, right: 0 }}
-                  >
-                    <DeleteOutlined />
-                  </Button>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Upload
+                name="postImage"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                beforeUpload={() => false}
+                onChange={handleImageChange}
+                fileList={fileList}
+              >
+                {fileList.length > 0 ? (
+                  <img 
+                    src={fileList[0].url}
+                    alt="post" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div>
+                    <UploadOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
+              {fileList.length > 0 && (
+                <Button
+                  type="link"
+                  onClick={handleRemoveImage}
+                  style={{ marginLeft: '10px' }}
+                >
+                  <DeleteOutlined /> Remove
+                </Button>
               )}
-            </Upload>
+            </div>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" style={{ borderRadius: '10px', backgroundColor: '#1890ff', borderColor: '#1890ff' }}>
