@@ -83,9 +83,9 @@ const Notification: React.FC = () => {
             <RangePicker onChange={(dates) => handleDateChange(dates as [Dayjs, Dayjs] | null)} style={{ borderRadius: '10px', borderColor: '#1890ff' }} />
             <Select defaultValue="all" onChange={handleFilterChange} style={{ width: 120, borderRadius: '10px', borderColor: '#1890ff' }}>
               <Option value="all">All</Option>
-              <Option value="info">Info</Option>
-              <Option value="warning">Warning</Option>
-              <Option value="error">Error</Option>
+              <Option value="published">Published</Option>
+              <Option value="draft">Draft</Option>
+              <Option value="private">Private</Option>
             </Select>
           </div>
         </div>

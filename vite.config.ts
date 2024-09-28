@@ -13,14 +13,17 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'antd-vendor': ['antd'],
-          'react-router-vendor': ['react-router-dom'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'; // Separate vendor chunks
+          }
+          if (id.includes('src/components')) {
+            return 'components'; // Separate components
+          }
         },
       },
     },
-    chunkSizeWarningLimit: 1000, // Adjust the chunk size warning limit if needed
+    chunkSizeWarningLimit: 2000, // Adjust the chunk size limit if necessary
   },
   define: {
     'process.env': process.env

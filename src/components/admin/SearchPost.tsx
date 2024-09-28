@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, DatePicker, Select, Button, message } from 'antd';
+import { Input, DatePicker, Select, message } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 
 const { Option } = Select;
@@ -13,7 +13,6 @@ interface SearchPostProps {
   setSelectedEndDate: (date: Dayjs | null) => void;
   selectedStatus: string;
   setSelectedStatus: (value: string) => void;
-  handleReset: () => void;
 }
 
 const SearchPost: React.FC<SearchPostProps> = ({
@@ -24,8 +23,7 @@ const SearchPost: React.FC<SearchPostProps> = ({
   selectedEndDate,
   setSelectedEndDate,
   selectedStatus,
-  setSelectedStatus,
-  handleReset,
+  setSelectedStatus
 }) => {
 
     const currentDate = dayjs();
@@ -93,7 +91,6 @@ const SearchPost: React.FC<SearchPostProps> = ({
         <Option value="draft" style={{ color: 'red' }}>Draft</Option>
         <Option value="private"style={{ color: 'orange' }}>Private</Option>
       </Select>
-      <Button onClick={handleReset}>Reset Filters</Button>
     </div>
   );
 };

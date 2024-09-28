@@ -56,12 +56,6 @@ const ManagePost: React.FC = () => {
     setFilteredPosts(filtered);
   }, [searchText, selectedStartDate, selectedEndDate, selectedStatus, posts]);
 
-  const handleReset = () => {
-    setSearchText('');
-    setSelectedStartDate(null);
-    setSelectedEndDate(null);
-    setSelectedStatus('');
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -75,7 +69,6 @@ const ManagePost: React.FC = () => {
         setSelectedEndDate={setSelectedEndDate}
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
-        handleReset={handleReset}
       />
       <Post posts={filteredPosts} loading={loading} error={error} />
     </div>
