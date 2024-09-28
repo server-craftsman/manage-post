@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, DatePicker, Select, message } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-
+import { SearchOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 interface SearchPostProps {
@@ -64,6 +64,7 @@ const SearchPost: React.FC<SearchPostProps> = ({
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         className="mb-2"
+        prefix={<SearchOutlined />}
       />
       <div className="flex mb-2">
         <DatePicker
@@ -86,7 +87,7 @@ const SearchPost: React.FC<SearchPostProps> = ({
         className="mb-2"
         style={{ width: 200 }}
       >
-        <Option value="">All Statuses</Option>
+        <Option value="">All</Option>
         <Option value="published" style={{ color: 'green' }}>Published</Option>
         <Option value="draft" style={{ color: 'red' }}>Draft</Option>
         <Option value="private"style={{ color: 'orange' }}>Private</Option>
