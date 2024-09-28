@@ -37,14 +37,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const fetchedPosts = await postService.fetchPosts();
-        setPosts(fetchedPosts);
+        const fetchedPosts = await postService.getAllPosts();
+        if (user) {
+          const userPosts = fetchedPosts.filter(post => post.userId === user.id);
+          setPosts(userPosts);
+        }
       } catch (error) {
         console.error('Failed to fetch posts', error);
+        setError('Failed to fetch posts');
       }
     };
     fetchPosts();
-  }, []);
+  }, [user]);
 
   const login = async (email: string, password: string): Promise<IUser> => {
     try {
@@ -105,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('You must be logged in to create a post');
     }
     try {
-      const newPost = await postService.createPost(post, postImage); // Pass postImage to postService
+      const newPost = await postService.createPost(post, postImage);
       setPosts([...posts, newPost]);
       localStorage.setItem('posts', JSON.stringify([...posts, newPost]));
       setError(null);

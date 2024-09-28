@@ -3,7 +3,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { IPost } from '../../../models/Posts';
 import { v4 as uuidv4 } from 'uuid';
 import Compressor from 'compressorjs'; // Import Compressor.js
-import { Form, Input, Button, Upload, message, Row, Col, Typography, Alert } from 'antd';
+import { Form, Input, Button, Upload, message, Row, Col, Typography, Alert, Avatar } from 'antd';
 import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion'; // Import framer-motion
 import { useNavigate } from 'react-router-dom';
@@ -91,7 +91,7 @@ const CreatePost: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: 'easeInOut' }}
             >
-              <Title level={2} style={{ textAlign: 'center', color: 'black', fontWeight: 'bold', fontSize: '30px', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+              <Title level={2} style={{ textAlign: 'center', color: 'black', fontWeight: 'bold', fontSize: '30px' }}>
                 Create New Post
               </Title>
             </motion.div>
@@ -101,6 +101,10 @@ const CreatePost: React.FC = () => {
               </div>
             )}
             <Form onFinish={handleSubmit} layout="vertical">
+              <Form.Item style={{ textAlign: 'center' }}>
+                <Avatar size={64} src={user?.avatar} style={{ marginBottom: '10px' }} />
+                <Title level={4} style={{ color: 'black' }}>{user?.name}</Title>
+              </Form.Item>
               <Form.Item label="Post Image" required style={{ width: '100%' }}>
                 <Upload
                   name="postImage"
@@ -116,7 +120,7 @@ const CreatePost: React.FC = () => {
                     return false;
                   }}
                   onChange={handleImageChange}
-                  disabled={!!postImage} // Disable upload button after image is uploaded
+                  disabled={!!postImage}
                 >
                   {!postImage ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -173,6 +177,18 @@ const CreatePost: React.FC = () => {
                       borderColor: '#6c757d',
                       backgroundColor: status === 'draft' ? '#6c757d' : '#ffffff',
                       color: status === 'draft' ? '#ffffff' : '#6c757d'
+                    }}
+                  >
+                    Draft
+                  </Button>
+                  <Button
+                    type={status === 'private' ? 'primary' : 'default'}
+                    onClick={() => setStatus('private')}
+                    style={{
+                      borderRadius: '10px',
+                      borderColor: '#28a745',
+                      backgroundColor: status === 'private' ? '#28a745' : '#ffffff',
+                      color: status === 'private' ? '#ffffff' : '#28a745'
                     }}
                   >
                     Private
