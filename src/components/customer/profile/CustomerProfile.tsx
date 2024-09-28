@@ -6,15 +6,16 @@ import { UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import { HomeOutlined } from '@ant-design/icons';
 import Compressor from 'compressorjs'; // Import Compressor.js
-
+import { Rule } from 'antd/es/form';
 const CustomerProfile: React.FC = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, checkEmailExists } = useAuth(); // Add checkEmailExists
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
+  const [emailError, setEmailError] = useState<string | null>(null); // Add emailError state
   const navigate = useNavigate();
   if (!user) {
     return <div>Please log in to view your profile.</div>;
@@ -121,6 +122,65 @@ const CustomerProfile: React.FC = () => {
     });
   };
 
+  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    try {
+      const emailExists = await checkEmailExists(email);
+      if (emailExists) {
+        setEmailError('Email already exists. Please use another email.');
+      } else {
+        setEmailError(null);
+      }
+    } catch (err) {
+      setEmailError('Failed to check email');
+    }
+  };
+
+  const getValidationRules = (field: string) => {
+    switch (field) {
+      case 'name':
+        return [
+          { required: true, message: "Please input your name!" },
+          { min: 3, message: 'Name must be at least 3 characters long!' }
+        ];
+      case 'email':
+        return [
+          { required: true, type: "email", message: "Please input a valid email!" },
+          { validator: async (_: any, value: string) => { // Explicitly type '_'
+              if (value) {
+                const emailExists = await checkEmailExists(value);
+                if (emailExists) {
+                  setEmailError('Email already exists. Please use another email.');
+                  return Promise.reject();
+                }
+              }
+              return Promise.resolve();
+            }
+          }
+        ];
+      case 'avatar':
+        return [
+          { required: true, message: 'Please upload your Avatar!' }
+        ];
+      case 'currentPassword':
+        return [
+          { required: true, message: "Please input your current password!" }
+        ];
+      case 'newPassword':
+        return [
+          { required: true, message: "Please input your new password!" },
+          { min: 6, message: "Password must be at least 6 characters." }
+        ];
+      case 'confirmPassword':
+        return [
+          { required: true, message: "Please confirm your new password!" },
+          confirmPasswordValidator(passwordForm.getFieldValue)
+        ];
+      default:
+        return [];
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card style={{ width: "100%", borderRadius: "15px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
@@ -178,37 +238,29 @@ const CustomerProfile: React.FC = () => {
         okText="Save"
         cancelText="Cancel"
         centered
-        bodyStyle={{ padding: "20px" }}
+        style={{ padding: "20px" }}
       >
         <Form form={form} layout="vertical">
           <Form.Item
             label="Name"
             name="name"
-            rules={[
-              { required: true, message: "Please input your name!" },
-              { min: 3, message: 'Name must be at least 3 characters long!' }
-            ]}
+            rules={getValidationRules('name') as Rule[]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             label="Email"
             name="email"
-            rules={[
-              {
-                required: true,
-                type: "email",
-                message: "Please input a valid email!",
-              },
-            ]}
+            rules={getValidationRules('email') as Rule[]}
           >
-            <Input />
+            <Input onChange={handleEmailChange} />
           </Form.Item>
+          {emailError && <p className="text-red-500">{emailError}</p>}
 
           <Form.Item
             label="Upload Avatar"
             name="avatar"
-            rules={[{ required: true, message: 'Please upload your Avatar!' }]}
+            rules={getValidationRules('avatar') as Rule[]}
           >
             <div style={{ display: 'flex', justifyContent: 'left' }}>
               <div style={{marginRight: '10px'}}>
@@ -254,28 +306,20 @@ const CustomerProfile: React.FC = () => {
         okText="Save"
         cancelText="Cancel"
         centered
-        bodyStyle={{ padding: "20px" }}
+        style={{ padding: "20px" }}
       >
         <Form form={passwordForm} layout="vertical">
           <Form.Item
             label="Current Password"
             name="currentPassword"
-            rules={[
-              {
-                required: true,
-                message: "Please input your current password!",
-              },
-            ]}
+            rules={getValidationRules('currentPassword') as Rule[]}
           >
             <Input.Password />
           </Form.Item>
           <Form.Item
             label="New Password"
             name="newPassword"
-            rules={[
-              { required: true, message: "Please input your new password!" },
-              { min: 6, message: "Password must be at least 6 characters." },
-            ]}
+            rules={getValidationRules('newPassword') as Rule[]}
           >
             <Input.Password />
           </Form.Item>
@@ -283,10 +327,7 @@ const CustomerProfile: React.FC = () => {
             label="Confirm New Password"
             name="confirmPassword"
             dependencies={["newPassword"]}
-            rules={[
-              { required: true, message: "Please confirm your new password!" },
-              confirmPasswordValidator(passwordForm.getFieldValue), // Use the validator correctly
-            ]}
+            rules={getValidationRules('confirmPassword') as Rule[]}
           >
             <Input.Password />
           </Form.Item>

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getUserById, deleteUser } from '../../services/auth';
 import { IUser } from '../../models/Users';
 import { ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
-
+import { message } from 'antd';
 const UserDetail = () => {
     const [dataSource, setDataSource] = useState<IUser | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -27,9 +27,15 @@ const UserDetail = () => {
 
     const handleDeleteUser = async (id: string) => {
         console.log("user", id);
-        await deleteUser(id);
-        if (dataSource) {
-            setDataSource(null);
+        try {
+            await deleteUser(id);
+            message.success('User deleted successfully');
+            if (dataSource) {
+                setDataSource(null);
+            }
+            navigate('/admin/manage-users');
+        } catch (error) {
+            console.error('Failed to delete user', error);
         }
     }
 

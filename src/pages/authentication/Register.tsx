@@ -7,11 +7,12 @@ import { IUser } from '../../models/Users';
 import { v4 as uuidv4 } from 'uuid';
 import Compressor from 'compressorjs'; // Import Compressor.js
 import { motion } from 'framer-motion'; // Import framer-motion
-
+import { Rule } from 'antd/lib/form'; // Import the Rule type from antd
 const Register = () => {
-  const { register, error } = useAuth();
+  const { register, checkEmailExists, error } = useAuth();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const onFinish = async (values: { name: string; username: string; email: string; password: string; confirmPassword: string }) => {
@@ -23,6 +24,11 @@ const Register = () => {
       }
       if (!avatarFile) {
         message.error('Please upload your Avatar!');
+        return;
+      }
+      const emailExists = await checkEmailExists(email);
+      if (emailExists) {
+        message.error('Email already exists. Please use another email.');
         return;
       }
       const user: IUser = {
@@ -50,6 +56,64 @@ const Register = () => {
       }
     }
   };
+
+  const handleEmailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    try {
+      const emailExists = await checkEmailExists(email);
+      if (emailExists) {
+        setEmailError('Email already exists. Please use another email.');
+      } else {
+        setEmailError(null);
+      }
+    } catch (err) {
+      setEmailError('Failed to check email');
+    }
+  };
+
+  const getValidationRules = () => {
+    return {
+      name: [
+        { required: true, message: 'Please input your Name!' },
+        { min: 3, message: 'Name must be at least 3 characters long!' }
+      ],
+      email: [
+        { required: true, message: 'Please input your Email!' },
+        { type: 'email', message: 'Please enter a valid Email!' },
+        { validator: async (_: any, value: string) => { // Explicitly type '_'
+            if (value) {
+              const emailExists = await checkEmailExists(value);
+              if (emailExists) {
+                return Promise.reject('Email already exists. Please use another email.');
+              }
+            }
+            return Promise.resolve();
+          }
+        }
+      ],
+      password: [
+        { required: true, message: 'Please input your Password!' },
+        { min: 6, message: 'Password must be at least 6 characters long!' },
+        { pattern: /^(?=.*[A-Z])(?=.*\d).{6,}$/, message: 'Password must contain at least one uppercase letter and one number!' }
+      ],
+      confirmPassword: [
+        { required: true, message: 'Please confirm your Password!' },
+        ({ getFieldValue }: { getFieldValue: (field: string) => string }) => ({
+          validator(_: any, value: string) { // Explicitly type '_' and 'value'
+            if (!value || getFieldValue('password') === value) {
+              return Promise.resolve();
+            }
+            return Promise.reject(new Error('The two passwords do not match!'));
+          },
+        }),
+      ],
+      avatar: [
+        { required: true, message: 'Please upload your Avatar!' }
+      ]
+    };
+  };
+
+  const validationRules = getValidationRules();
 
   return (
     <motion.div
@@ -82,54 +146,37 @@ const Register = () => {
             >
               <Form.Item
                 name="name"
-                rules={[
-                  { required: true, message: 'Please input your Name!' },
-                  { min: 3, message: 'Name must be at least 3 characters long!' }
-                ]}
+                rules={validationRules.name}
               >
                 <Input placeholder="Name" />
               </Form.Item>
 
               <Form.Item
                 name="email"
-                rules={[
-                  { required: true, message: 'Please input your Email!' },
-                  { type: 'email', message: 'Please enter a valid Email!' }
-                ]}
+                rules={validationRules.email as Rule[]}
+                validateStatus={emailError ? 'error' : ''}
+                help={emailError}
               >
-                <Input placeholder="Email" />
+                <Input placeholder="Email" onChange={handleEmailChange} />
               </Form.Item>
 
               <Form.Item
                 name="password"
-                rules={[
-                  { required: true, message: 'Please input your Password!' },
-                  { min: 6, message: 'Password must be at least 6 characters long!' }
-                ]}
+                rules={validationRules.password}
               >
                 <Input.Password placeholder="Password" />
               </Form.Item>
 
               <Form.Item
                 name="confirmPassword"
-                rules={[
-                  { required: true, message: 'Please confirm your Password!' },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue('password') === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('The two passwords do not match!'));
-                    },
-                  }),
-                ]}
+                rules={validationRules.confirmPassword}
               >
                 <Input.Password placeholder="Confirm Password" />
               </Form.Item>
 
               <Form.Item
                 name="avatar"
-                rules={[{ required: true, message: 'Please upload your Avatar!' }]}
+                rules={validationRules.avatar}
               >
                 <Upload
                   name="avatar"

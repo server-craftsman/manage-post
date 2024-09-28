@@ -18,6 +18,8 @@ interface AuthContextType {
   deletePost: (id: string) => Promise<void>;
   setPosts: (posts: IPost[]) => void;
   getPostCountByUserId: (userId: string) => Promise<number>;
+  createUser: (userData: IUser) => Promise<IUser | null>;
+  checkEmailExists: (email: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -86,6 +88,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (name: string, email: string, password: string, avatar: File, role: string, createDate: Date, updateDate: Date) => {
     try {
+      const emailExists = await authService.checkEmailExists(email);
+      if (emailExists) {
+        throw new Error('Email already exists. Please use another email.');
+      }
       const newUser = await authService.register(name, email, password, avatar, role, createDate, updateDate);
       setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));
@@ -101,6 +107,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
       throw err;
+    }
+  };
+
+  const createUser = async (userData: IUser): Promise<IUser | null> => {
+    try {
+      const emailExists = await authService.checkEmailExists(userData.email);
+      if (emailExists) {
+        throw new Error('Email already exists. Please use another email.');
+      }
+      const newUser = await authService.createUser(userData);
+      return newUser; // Return the new user
+    } catch (error) {
+      console.error('Failed to create user', error);
+      setError('Failed to create user');
+      return null; // Return null on error
     }
   };
 
@@ -170,8 +191,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    const emailExists = await authService.checkEmailExists(email);
+    return emailExists;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, createPost, updatePost, deletePost, setPosts, getPostCountByUserId }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, createPost, updatePost, deletePost, setPosts, getPostCountByUserId, createUser, checkEmailExists }}>
       {children}
     </AuthContext.Provider>
   );

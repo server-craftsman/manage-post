@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { IUser } from "../../models/Users";
 import { getAllUsers } from "../../services/auth";
-import { Spin, Alert } from "antd";
+import { Spin, Alert, Row, Col } from "antd";
 import SearchUser from "../../components/admin/SearchUser"; // Import SearchUser
 import ManageUser from "../../components/admin/ManageUser"; // Import ManageUser
+import RegisterUser from "../../components/admin/CreateUser";
 
 const ManageUsers = () => {
   const [dataSource, setDataSource] = useState<IUser[]>([]);
@@ -43,6 +44,12 @@ const ManageUsers = () => {
     setFilteredData(filtered);
   };
 
+  // Callback to add a new user to the list
+  const addUser = (newUser: IUser) => {
+    setDataSource((prev) => [...prev, { ...newUser, key: newUser.id }]);
+    setFilteredData((prev) => [...prev, { ...newUser, key: newUser.id }]);
+  };
+
   if (loading) {
     return (
       <div style={{ textAlign: "center", padding: "50px" }}>
@@ -61,14 +68,24 @@ const ManageUsers = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-       <SearchUser
-        searchText={searchText}
-        setSearchText={setSearchText}
-        handleSearch={handleSearch}
-        selectedRole={selectedRole}
-        setSelectedRole={setSelectedRole}
-      />
-      <ManageUser filteredData={filteredData} />
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <SearchUser
+            searchText={searchText}
+            setSearchText={setSearchText}
+            handleSearch={handleSearch}
+            selectedRole={selectedRole}
+            setSelectedRole={setSelectedRole}
+          />
+        </Col>
+        <Col span={24}>
+          <RegisterUser addUser={addUser} />
+        </Col>
+        <Col span={24}>
+          <ManageUser filteredData={filteredData} />
+        </Col>
+       
+      </Row>
     </div>
   );
 }

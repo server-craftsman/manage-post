@@ -1,37 +1,36 @@
 import { Input, Row, Col, Radio } from "antd";
-import { useState } from "react";
+import { SearchOutlined } from '@ant-design/icons';
+import { motion } from "framer-motion";
+
+const { Group: RadioGroup, Button: RadioButton } = Radio;
 
 interface SearchUserProps {
   searchText: string;
   setSearchText: (value: string) => void;
   handleSearch: (value: string, role: string) => void;
-  selectedRole: string; // Add selectedRole
-  setSelectedRole: (value: string) => void; // Add setSelectedRole
+  selectedRole: string;
+  setSelectedRole: (value: string) => void;
 }
 
 const SearchUser = ({
   searchText,
   setSearchText,
   handleSearch,
+  selectedRole,
+  setSelectedRole,
 }: SearchUserProps) => {
-  const [selectedRole, setSelectedRole] = useState<string>("");
-
-  // Define styles
-  const radioGroupStyle = { display: "flex" };
-  const radioContainerStyle: React.CSSProperties = { display: "flex", alignItems: "center", marginRight: "16px" };
-  
-  const radioStyle = (isSelected: boolean, role: string) => ({
-    borderRadius: "0.375rem", // Tailwind's rounded-md
-    padding: "0.5rem", // Tailwind's p-2
-    border: `1px solid ${isSelected ? (role === 'admin' ? 'pink' : role === 'customer' ? 'red' : 'blue') : 'black'}`,
-  });
-
-  const textStyle = (isSelected: boolean, color: string) => ({
-    color: isSelected ? color : 'black',
-  });
 
   return (
-    <Row style={{ marginBottom: "20px" }} gutter={16}>
+    <Row
+      style={{
+        marginBottom: "16px",
+        padding: "10px",
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+      }}
+      gutter={16}
+    >
       <Col span={12}>
         <Input
           placeholder="Search by Name or Email"
@@ -42,34 +41,54 @@ const SearchUser = ({
             handleSearch(value, selectedRole);
           }}
           allowClear
+          prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
+          style={{
+            borderRadius: "8px",
+            padding: "10px",
+            border: "1px solid #d9d9d9",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+          }}
         />
       </Col>
       <Col span={12}>
-        <Radio.Group
-          onChange={(e) => {
-            const role = e.target.value;
-            setSelectedRole(role);
-            handleSearch(searchText, role);
-          }}
+        <RadioGroup
           value={selectedRole}
-          style={radioGroupStyle}
+          onChange={(e) => {
+            const value = e.target.value;
+            setSelectedRole(value);
+            handleSearch(searchText, value);
+          }}
+          style={{ width: "100%", display: "flex", justifyContent: "space-around" }}
         >
-          <div style={radioContainerStyle}>
-            <Radio value="" style={radioStyle(selectedRole === '', '')}>
-              <span style={textStyle(selectedRole === '', 'blue')}>All Roles</span>
-            </Radio>
-          </div>
-          <div style={radioContainerStyle}>
-            <Radio value="admin" style={radioStyle(selectedRole === 'admin', 'admin')}>
-              <span style={textStyle(selectedRole === 'admin', 'pink')}>Admin</span>
-            </Radio>
-          </div>
-          <div style={radioContainerStyle}>
-            <Radio value="customer" style={radioStyle(selectedRole === 'customer', 'customer')}>
-              <span style={textStyle(selectedRole === 'customer', 'red')}>Customer</span>
-            </Radio>
-          </div>
-        </Radio.Group>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            style={{ position: "relative" }}
+          >
+            <RadioButton value="">
+              All Roles   
+            </RadioButton>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            style={{ position: "relative" }}
+          >
+            <RadioButton value="admin">
+              Admin
+             
+            </RadioButton>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            style={{ position: "relative" }}
+          >
+            <RadioButton value="customer">
+              Customer           
+            </RadioButton>
+          </motion.div>
+        </RadioGroup>
       </Col>
     </Row>
   );

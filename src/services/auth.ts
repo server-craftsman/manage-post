@@ -83,3 +83,35 @@ export const updateUser = async (userData: IUser): Promise<IUser> => {
   const response = await axiosInstance.put(`${API_URL}/${userData.id}`, userData);
   return response.data;
 };
+
+export const createUser = async (userData: IUser): Promise<IUser | null> => {
+  try {
+    const response = await axiosInstance.post<IUser>(API_URL, userData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 413) {
+        throw new Error('Payload Too Large');
+      } else if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+    }
+    throw new Error('Failed to create user');
+  }
+};
+
+export const checkEmailExists = async (email: string): Promise<boolean> => {
+  try {
+    const response = await axiosInstance.get<IUser[]>(API_URL);
+    const users = response.data;
+    return users.some(user => user.email === email);
+  } catch (error) {
+    throw new Error('Failed to check email');
+  }
+};
+
