@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { IPost } from '../../../models/Posts';
 import * as postService from '../../../services/posts';
-import { List, Typography, Image, Spin, Alert, Select, DatePicker, Avatar, Button, Modal, Form, Input, Upload, message } from 'antd';
+import { List, Typography, Image, Spin, Alert, Select, DatePicker, Avatar, Button, Modal, Form, Input, Upload, message, Tag } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, SyncOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import moment, { Moment } from 'moment';
 import { Dayjs } from 'dayjs';
@@ -193,10 +193,18 @@ const HistoryPost: React.FC = () => {
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <RangePicker onChange={(dates) => handleDateChange(dates as [Dayjs, Dayjs] | null)} style={{ borderRadius: '10px', borderColor: '#1890ff' }} />
           <Select defaultValue="all" onChange={handleFilterChange} style={{ width: 120, borderRadius: '10px', borderColor: '#1890ff' }}>
-            <Option value="all">All</Option>
-            <Option value="published">Published</Option>
-            <Option value="draft">Draft</Option>
-            <Option value="private">Private</Option>
+            <Option value="all">
+              <Tag color="blue">All</Tag>
+            </Option>
+            <Option value="published">
+              <Tag color="green">Published</Tag>
+            </Option>
+            <Option value="draft">
+              <Tag color="orange">Draft</Tag>
+            </Option>
+            <Option value="private">
+              <Tag color="red">Private</Tag>
+            </Option>
           </Select>
         </div>
       </div>
@@ -228,9 +236,15 @@ const HistoryPost: React.FC = () => {
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                   }}
                 >
-                  <Option value="published" style={{ color: 'green' }}>Published</Option>
-                  <Option value="draft" style={{ color: 'red' }}>Draft</Option>
-                  <Option value="private" style={{ color: 'orange' }}>Private</Option>
+                  <Option value="published">
+                    <Tag color="green">Published</Tag>
+                  </Option>
+                  <Option value="draft">
+                    <Tag color="orange">Draft</Tag>
+                  </Option>
+                  <Option value="private">
+                    <Tag color="red">Private</Tag>
+                  </Option>
                 </Select>
               ]}
               style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '15px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', marginBottom: '20px' }}
@@ -242,7 +256,11 @@ const HistoryPost: React.FC = () => {
                   <>
                     <Text>{post.description}</Text>
                     <br />
-                    <Text type="secondary">Status: {post.status === 'published' ? <><CheckCircleOutlined style={{ color: 'green' }} /> Published</> : post.status === 'draft' ? <><CloseCircleOutlined style={{ color: 'red' }} /> Draft</> : <><SyncOutlined style={{ color: 'orange' }} /> Private</>}</Text>
+                    <Text type="secondary">Status: {
+                      post.status === 'published' ? <Tag color="green"><CheckCircleOutlined /> Published</Tag> :
+                      post.status === 'draft' ? <Tag color="orange"><CloseCircleOutlined /> Draft</Tag> :
+                      <Tag color="red"><SyncOutlined /> Private</Tag>
+                    }</Text>
                     <br />
                     <Text type="secondary">Created At: {formatDate(new Date(post.createDate))}</Text>
                     <br />
