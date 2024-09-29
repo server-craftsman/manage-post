@@ -5,7 +5,7 @@ import { Spin, Alert, Row, Col } from "antd";
 import SearchUser from "../../components/admin/SearchUser"; // Import SearchUser
 import ManageUser from "../../components/admin/ManageUser"; // Import ManageUser
 import RegisterUser from "../../components/admin/CreateUser";
-
+import dayjs, { Dayjs } from "dayjs";
 const ManageUsers = () => {
   const [dataSource, setDataSource] = useState<IUser[]>([]);
   const [filteredData, setFilteredData] = useState<IUser[]>([]);
@@ -13,6 +13,8 @@ const ManageUsers = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<string>("");
+  const [selectedStartDate, setSelectedStartDate] = useState<Dayjs | null>(null);
+  const [selectedEndDate, setSelectedEndDate] = useState<Dayjs | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -43,6 +45,19 @@ const ManageUsers = () => {
     );
     setFilteredData(filtered);
   };
+
+  useEffect(() => {
+    const filtered = dataSource.filter((dataSource) => {
+
+      const postDate = dayjs(dataSource.createDate);
+      const matchesDate =
+        (selectedStartDate ? postDate.isSameOrAfter(selectedStartDate, 'day') : true) &&
+        (selectedEndDate ? postDate.isSameOrBefore(selectedEndDate, 'day') : true);
+      return  matchesDate;
+    });
+
+    setFilteredData(filtered);
+  }, [ selectedStartDate, selectedEndDate]);
 
   // Callback to add a new user to the list
   const addUser = (newUser: IUser) => {
@@ -76,6 +91,10 @@ const ManageUsers = () => {
             handleSearch={handleSearch}
             selectedRole={selectedRole}
             setSelectedRole={setSelectedRole}
+            selectedStartDate={selectedStartDate}
+            setSelectedStartDate={setSelectedStartDate}
+            selectedEndDate={selectedEndDate}
+            setSelectedEndDate={setSelectedEndDate}
           />
         </Col>
         <Col span={24}>

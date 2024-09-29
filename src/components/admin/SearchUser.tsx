@@ -1,6 +1,7 @@
-import { Input, Row, Col, Radio } from "antd";
+import { Input, Row, Col, Radio, DatePicker, message } from "antd";
 import { SearchOutlined } from '@ant-design/icons';
 import { motion } from "framer-motion";
+import dayjs, { Dayjs } from 'dayjs';
 
 const { Group: RadioGroup, Button: RadioButton } = Radio;
 
@@ -10,6 +11,10 @@ interface SearchUserProps {
   handleSearch: (value: string, role: string) => void;
   selectedRole: string;
   setSelectedRole: (value: string) => void;
+  selectedStartDate: Dayjs | null;
+  setSelectedStartDate: (date: Dayjs | null) => void;
+  selectedEndDate: Dayjs | null;
+  setSelectedEndDate: (date: Dayjs | null) => void;
 }
 
 const SearchUser = ({
@@ -18,7 +23,42 @@ const SearchUser = ({
   handleSearch,
   selectedRole,
   setSelectedRole,
+  selectedStartDate,
+  setSelectedStartDate,
+  selectedEndDate,
+  setSelectedEndDate,
 }: SearchUserProps) => {
+
+  const currentDate = dayjs();
+  const hundredYearsAgo = currentDate.subtract(100, 'year');
+
+  const handleEndDateChange = (date: Dayjs | null) => {
+    if (!selectedStartDate) {
+      message.warning('Please select a Start Date first.');
+      setSelectedEndDate(null);
+      return;
+    }
+
+    if (date && date.isBefore(selectedStartDate, 'day')) {
+      message.warning('End Date should be greater than or equal to Start Date');
+      setSelectedEndDate(null);
+    } else {
+      setSelectedEndDate(date);
+    }
+  };
+
+  const handleStartDateChange = (date: Dayjs | null) => {
+    if (date && date.isAfter(currentDate)) {
+      message.warning('Start Date cannot be in the future.');
+      setSelectedStartDate(null);
+    } else {
+      setSelectedStartDate(date);
+    }
+  };
+
+  const disableStartDate = (date: Dayjs) => {
+    return date.isBefore(hundredYearsAgo, 'day');
+  };
 
   return (
     <Row
@@ -90,6 +130,33 @@ const SearchUser = ({
           </motion.div>
         </RadioGroup>
       </Col>
+      <Col span={12} style={{ marginTop: '16px' }}>
+          <DatePicker
+            value={selectedStartDate}
+            onChange={handleStartDateChange}
+            placeholder="Start Date"
+            disabledDate={disableStartDate}
+            style={{
+              width: '100%',
+              height: '48px',
+              borderRadius: '8px',
+              fontSize: '16px'
+            }}
+          />
+        </Col>
+        <Col span={12} style={{ marginTop: '16px' }}>
+          <DatePicker
+            value={selectedEndDate}
+            onChange={handleEndDateChange}
+            placeholder="End Date"
+            style={{
+              width: '100%',
+              height: '48px',
+              borderRadius: '8px',
+              fontSize: '16px'
+            }}
+          />
+        </Col>
     </Row>
   );
 };
