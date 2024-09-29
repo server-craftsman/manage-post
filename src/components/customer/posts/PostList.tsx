@@ -66,7 +66,7 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
 
   return (
     <div style={{ background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)', minHeight: '100vh', padding: '60px 0' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '50px', backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px', backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
         <Title level={1} style={{ fontFamily: 'Playfair Display, serif', textAlign: 'center', marginBottom: '50px', fontSize: '52px', fontWeight: 'bold', color: '#333', textShadow: '2px 2px 4px rgba(0,0,0,0.1)', letterSpacing: '1px' }}>
           Explore Our Exquisite Blog Posts
         </Title>
@@ -75,7 +75,7 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
             <div key={index}>
               <div style={{ display: 'flex', justifyContent: 'space-between', height: '570px', padding: '0 50px' }}>
                 {slide.map(post => (
-                  <div key={post.id} style={{ width: '30%' }}>
+                  <div key={post.id} style={{ width: '31%' }}>
                     <PostType post={post} />
                   </div>
                 ))}

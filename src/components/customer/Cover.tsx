@@ -8,8 +8,8 @@ import image4 from '../../asset/4.jpg';
 import 'antd/dist/reset.css';
 import { CSSProperties } from 'react';
 const contentStyle: CSSProperties = {
-  paddingTop: '30px',
-  marginBottom: '30px',
+  // paddingTop: '10px',
+  // marginBottom: '30px',
   height: '500px',
   width: '100%',
   objectFit: 'cover',
