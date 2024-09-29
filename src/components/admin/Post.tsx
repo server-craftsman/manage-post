@@ -1,8 +1,8 @@
 import React from 'react';
 import { IPost } from '../../models/Posts';
-import { Table, Button, Spin } from 'antd';
+import { Table, Button, Spin, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom';
-
+import { formatDate } from '../../utils/formatDate';
 interface ManageBlogsProps {
   posts: IPost[];
   loading: boolean;
@@ -30,6 +30,24 @@ const ManageBlogs: React.FC<ManageBlogsProps> = ({ posts, loading, error }) => {
     return <div>{error}</div>;
   }
 
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'published':
+        return 'green';
+      case 'draft':
+        return 'red';
+      case 'private':
+        return 'yellow';
+      default:
+        return 'default';
+    }
+  };
+
+  const truncateDescription = (description: string, maxLength: number = 50) => {
+    if (description.length <= maxLength) return description;
+    return `${description.substring(0, maxLength)}...`;
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Manage Blogs</h1>
@@ -38,7 +56,25 @@ const ManageBlogs: React.FC<ManageBlogsProps> = ({ posts, loading, error }) => {
         <Table.Column title="ID" dataIndex="id" key="id" className="py-2 px-4 border-b" />
         <Table.Column title="Title" dataIndex="title" key="title" className="py-2 px-4 border-b" />
         <Table.Column title="Author ID" dataIndex="userId" key="userId" className="py-2 px-4 border-b" />
-        <Table.Column title="Created At" dataIndex="createDate" key="createDate" className="py-2 px-4 border-b" render={(text) => new Date(text).toLocaleDateString()} />
+        <Table.Column 
+          title="Description" 
+          dataIndex="description" 
+          key="description" 
+          className="py-2 px-4 border-b"
+          render={(description: string) => truncateDescription(description)}
+        />
+        <Table.Column 
+          title="Status" 
+          dataIndex="status" 
+          key="status" 
+          className="py-2 px-4 border-b"
+          render={(status: string) => (
+            <Tag color={getStatusColor(status)} key={status}>
+              {status.toUpperCase()}
+            </Tag>
+          )}
+        />
+        <Table.Column title="Created At" dataIndex="createDate" key="createDate" className="py-2 px-5 border-b" render={(text) => formatDate(new Date(text))} />
         <Table.Column
           title="Actions"
           key="actions"

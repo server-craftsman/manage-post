@@ -6,6 +6,7 @@ import { List, Typography, Image, Spin, Alert, Select, DatePicker, Avatar, Butto
 import { CheckCircleOutlined, CloseCircleOutlined, SyncOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import moment, { Moment } from 'moment';
 import { Dayjs } from 'dayjs';
+import { formatDate } from '../../../utils/formatDate';
 import 'moment/locale/vi';
 import { motion } from 'framer-motion';
 moment.locale('vi');
@@ -243,9 +244,9 @@ const HistoryPost: React.FC = () => {
                     <br />
                     <Text type="secondary">Status: {post.status === 'published' ? <><CheckCircleOutlined style={{ color: 'green' }} /> Published</> : post.status === 'draft' ? <><CloseCircleOutlined style={{ color: 'red' }} /> Draft</> : <><SyncOutlined style={{ color: 'orange' }} /> Private</>}</Text>
                     <br />
-                    <Text type="secondary">Created At: {moment(post.createDate).format('DD/MM/YYYY')}</Text>
+                    <Text type="secondary">Created At: {formatDate(new Date(post.createDate))}</Text>
                     <br />
-                    <Text type="secondary">Updated At: {moment(post.updateDate).format('DD/MM/YYYY')}</Text>
+                    <Text type="secondary">Updated At: {formatDate(new Date(post.updateDate))}</Text>
                   </>
                 }
               />

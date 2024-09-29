@@ -7,6 +7,8 @@ import { IPost } from '../../models/Posts';
 import { ArrowLeftOutlined, DeleteOutlined, UserOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import * as postService from '../../services/posts';
+import { ClockCircleOutlined } from '@ant-design/icons';
+import { formatDate } from '../../utils/formatDate';
 import SearchPost from './SearchPost';
 import dayjs, { Dayjs } from 'dayjs';
 const { Title, Text } = Typography;
@@ -91,7 +93,12 @@ const UserDetail = () => {
             title: 'Created At',
             dataIndex: 'createDate',
             key: 'createDate',
-            render: (date: string) => <Text>{new Date(date).toLocaleDateString()}</Text>,
+            render: (date: string) => (
+                <span>
+                  <ClockCircleOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+                  {formatDate(new Date(date))}
+                </span>
+              ),
         },
         {
             title: 'Post Image',
@@ -159,8 +166,8 @@ const UserDetail = () => {
                             <Text strong>Role:</Text> <Text>{dataSource.role}</Text><br/>
                             <Text strong>Name:</Text> <Text>{dataSource.name}</Text><br/>
                             <Text strong>Email:</Text> <Text>{dataSource.email}</Text><br/>
-                            <Text strong>Created At:</Text> <Text>{new Date(dataSource.createDate).toLocaleDateString()}</Text><br/>
-                            <Text strong>Updated At:</Text> <Text>{new Date(dataSource.updateDate).toLocaleDateString()}</Text><br/>
+                            <Text strong>Created At:</Text> <Text>{formatDate(new Date(dataSource.createDate))}</Text><br/>
+                            <Text strong>Updated At:</Text> <Text>{formatDate(new Date(dataSource.updateDate))}</Text><br/>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '30px' }}>
                                 <Button type="default" icon={<ArrowLeftOutlined />} 
                                     style={{ 

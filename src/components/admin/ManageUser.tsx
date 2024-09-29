@@ -1,7 +1,9 @@
 import React, { useCallback } from "react";
-import { Button, Table } from "antd";
+import { Avatar, Button, Table } from "antd";
 import { Link } from "react-router-dom";
 import { IUser } from "../../models/Users";
+import { formatDateForTable } from "../../utils/formatDate";
+import { ClockCircleOutlined } from '@ant-design/icons';
 
 interface ManageUserProps {
   filteredData: IUser[]; // Accept the filtered data from ManageUsers
@@ -34,6 +36,14 @@ const ManageUser: React.FC<ManageUserProps> = ({ filteredData }) => {
       key: "id",
     },
     {
+      title: "Avatar",
+      dataIndex: "avatar",
+      key: "avatar",
+      render: (avatar: string) => (
+        <Avatar src={avatar} alt="Avatar" style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
+      ),
+    },
+    {
       title: "Name",
       dataIndex: "name",
       key: "name",
@@ -47,6 +57,17 @@ const ManageUser: React.FC<ManageUserProps> = ({ filteredData }) => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+    },
+    {
+      title: "Create Date",
+      dataIndex: "createDate",
+      key: "createDate",
+      render: (createDate: string) => (
+        <span>
+          <ClockCircleOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+          {formatDateForTable(createDate)}
+        </span>
+      ),
     },
     {
       title: "Action",
@@ -63,6 +84,7 @@ const ManageUser: React.FC<ManageUserProps> = ({ filteredData }) => {
         dataSource={filteredData} 
         className="styled-table" 
         rowKey="id"
+        pagination={{ pageSize: 5 }}
       />
     </div>
   );
