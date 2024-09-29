@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 /// <reference types="node" />
+/// <reference types="vite/client" />
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -27,5 +28,6 @@ export default defineConfig({
   },
   define: {
     'process.env': process.env
-  }
+  },
+  base: '/',
 })
