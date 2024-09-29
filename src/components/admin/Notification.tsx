@@ -8,6 +8,8 @@ import 'moment/locale/vi';
 import { motion } from 'framer-motion';
 import { getAllPosts } from '../../services/posts';
 import PaginationComponent from '../PaginationComponent';
+import { useNotification } from '../../context/NotificationContext';
+
 moment.locale('vi');
 
 const { Title, Text } = Typography;
@@ -22,6 +24,7 @@ const Notification: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const postsPerPage = 5;
+  const [viewedNotifications, setViewedNotifications] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -86,6 +89,24 @@ const Notification: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const { isNewNotification } = useNotification();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setViewedNotifications(new Set(notifications.map(n => n.id)));
+    }, 5000); // Reset after 5 seconds, adjust as needed
+    return () => clearTimeout(timer);
+  }, [notifications]);
+
+  const handleNotificationView = (id: string) => {
+    setViewedNotifications(prev => new Set(prev).add(id));
+  };
+
+  const handleNotificationClick = (id: string) => {
+    handleNotificationView(id);
+    window.location.href = `/admin/post-detail/${id}`;
+  };
+
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -132,32 +153,51 @@ const Notification: React.FC = () => {
               itemLayout="horizontal"
               dataSource={currentPosts}
               renderItem={notification => (
-                <List.Item
-                  style={{ padding: '30px', backgroundColor: '#ffffff', borderRadius: '20px', boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)', marginBottom: '30px', border: '1px solid #e8e8e8', transition: 'all 0.3s ease' }}
-                >
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        src={notification.postImage || 'https://via.placeholder.com/150'}
-                        alt="Post Image"
-                        style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
-                      />
-                    }
-                    title={<Text strong style={{ fontSize: '22px', color: '#1890ff', textShadow: '1px 1px 2px rgba(0,0,0,0.05)' }}>{notification.title}</Text>}
-                    description={
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <Text style={{ fontSize: '16px', color: '#333' }}>{notification.description}</Text>
-                        <Tag color={getStatusColor(notification.status)} style={{ alignSelf: 'flex-start', padding: '5px 10px', borderRadius: '15px' }}>
-                          {notification.status.charAt(0).toUpperCase() + notification.status.slice(1)}
-                        </Tag>
-                        <Text type="secondary" style={{ fontSize: '14px' }}>
-                          <ClockCircleOutlined style={{ marginRight: '5px' }} />
-                          Created At: {moment(notification.createDate).format('DD/MM/YYYY HH:mm:ss')}
-                        </Text>
-                      </div>
-                    }
-                  />
-                </List.Item>
+                <div onClick={() => handleNotificationClick(notification.id)} style={{ cursor: 'pointer' }}>
+                  <List.Item
+                    style={{
+                      padding: '30px',
+                      backgroundColor: !viewedNotifications.has(notification.id) && isNewNotification(notification.createDate.toString()) ? '#e6f7ff' : '#ffffff',
+                      borderRadius: '20px',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                      marginBottom: '30px',
+                      border: !viewedNotifications.has(notification.id) && isNewNotification(notification.createDate.toString()) ? '2px solid #1890ff' : '1px solid #e8e8e8',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar
+                          src={notification.postImage || 'https://via.placeholder.com/150'}
+                          alt="Post Image"
+                          style={{ width: 150, height: 150, objectFit: 'cover', borderRadius: '10px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+                        />
+                      }
+                      title={
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <Text strong style={{ fontSize: '22px', color: '#1890ff', textShadow: '1px 1px 2px rgba(0,0,0,0.05)' }}>
+                            {notification.title}
+                          </Text>
+                          {isNewNotification(notification.createDate.toString()) && (
+                            <Tag color="#1890ff" style={{ marginLeft: '10px' }}>New</Tag>
+                          )}
+                        </div>
+                      }
+                      description={
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <Text style={{ fontSize: '16px', color: '#333' }}>{notification.description}</Text>
+                          <Tag color={getStatusColor(notification.status)} style={{ alignSelf: 'flex-start', padding: '5px 10px', borderRadius: '15px' }}>
+                            {notification.status.charAt(0).toUpperCase() + notification.status.slice(1)}
+                          </Tag>
+                          <Text type="secondary" style={{ fontSize: '14px' }}>
+                            <ClockCircleOutlined style={{ marginRight: '5px' }} />
+                            Created At: {moment(notification.createDate).format('DD/MM/YYYY HH:mm:ss')}
+                          </Text>
+                        </div>
+                      }
+                    />
+                  </List.Item>
+                </div>
               )}
             />
             <PaginationComponent

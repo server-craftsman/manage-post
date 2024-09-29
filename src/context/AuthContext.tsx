@@ -22,6 +22,9 @@ interface AuthContextType {
   getPostCountByUserId: (userId: string) => Promise<number>;
   createUser: (userData: IUser) => Promise<IUser | null>;
   checkEmailExists: (email: string) => Promise<boolean>;
+  checkOldEmail: (email: string) => Promise<boolean>;
+  checkOldPassword: (password: string) => Promise<boolean>;
+  updateUserProfile: (userId: string, userData: Partial<IUser>) => Promise<IUser>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -211,8 +214,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return emailExists;
   };
 
+  const updateUserProfile = async (id: string, userData: Partial<IUser>): Promise<IUser> => {
+    try {
+      const updatedUser = await authService.updateUserProfile(id, userData);
+      if (user && user.id === id) {
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      return updatedUser;
+    } catch (error) {
+      console.error('Failed to update user profile', error);
+      setError('Failed to update user profile');
+      throw error;
+    }
+  };
+
+  const checkOldEmail = async (email: string): Promise<boolean> => {
+    const emailExists = await authService.checkOldEmail(email);
+    return emailExists;
+  };
+
+  const checkOldPassword = async (password: string): Promise<boolean> => {
+    const passwordExists = await authService.checkOldPassword(password);
+    return passwordExists;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, getPostById, createPost, updatePost, deletePost, setPosts, getPostCountByUserId, createUser, checkEmailExists, getUserById }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, error: error ?? undefined, posts, getPostById, createPost, updatePost, deletePost, setPosts, getPostCountByUserId, createUser, checkEmailExists, getUserById, updateUserProfile, checkOldEmail, checkOldPassword }}>
       {children}
     </AuthContext.Provider>
   );

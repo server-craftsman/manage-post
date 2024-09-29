@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Card, Descriptions, Avatar, Button, Modal, Form, Input, Upload, message } from "antd";
 import { useAuth } from "../../../context/AuthContext";
 import { IUser } from "../../../models/Users";
-import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined, EditOutlined, UserOutlined, MailOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
-import { HomeOutlined } from '@ant-design/icons';
 import { Rule } from 'antd/es/form';
 
 const CustomerProfile: React.FC = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, checkEmailExists, checkOldEmail, checkOldPassword } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
+  const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
+  const [emailForm] = Form.useForm();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -50,7 +51,6 @@ const CustomerProfile: React.FC = () => {
   const handleEdit = () => {
     form.setFieldsValue({
       name: user.name,
-      email: user.email,
       avatar: user.avatar,
     });
     setIsModalVisible(true);
@@ -102,6 +102,10 @@ const CustomerProfile: React.FC = () => {
   const handlePasswordChange = async () => {
     try {
       const values = await passwordForm.validateFields();
+      if (values.currentPassword !== user.password) {
+        message.error('Current password is incorrect.');
+        return;
+      }
       await updateUser({ ...user, password: values.newPassword });
       setIsPasswordModalVisible(false);
       passwordForm.resetFields();
@@ -111,12 +115,46 @@ const CustomerProfile: React.FC = () => {
     }
   };
 
+  const handleEmailChange = async () => {
+    try {
+      const values = await emailForm.validateFields();
+      if (values.currentEmail !== user.email) {
+        message.error('Current email is incorrect.');
+        return;
+      }
+      if (values.newEmail === user.email) {
+        message.error('New email must be different from the current email.');
+        return;
+      }
+      const emailExists = await checkEmailExists(values.newEmail);
+      if (emailExists) {
+        message.error('This email is already in use.');
+        return;
+      }
+      await updateUser({ ...user, email: values.newEmail });
+      setIsEmailModalVisible(false);
+      emailForm.resetFields();
+      message.success('Email changed successfully!');
+    } catch (error) {
+      console.error("Failed to validate email form:", error);
+    }
+  };
+
   const confirmPasswordValidator = (getFieldValue: (name: string) => any) => ({
     validator(_: any, value: string) {
       if (!value || getFieldValue("newPassword") === value) {
         return Promise.resolve();
       }
       return Promise.reject("The two passwords that you entered do not match!");
+    },
+  });
+
+  const confirmEmailValidator = (getFieldValue: (name: string) => any) => ({
+    validator(_: any, value: string) {
+      if (!value || getFieldValue("newEmail") === value) {
+        return Promise.resolve();
+      }
+      return Promise.reject("The two emails that you entered do not match!");
     },
   });
 
@@ -143,7 +181,8 @@ const CustomerProfile: React.FC = () => {
         ];
       case 'email':
         return [
-          { required: true, type: "email", message: "Please input a valid email!" }
+          { required: true, type: "email", message: "Please input a valid email!" },
+          { validator: checkOldEmail }
         ];
       case 'avatar':
         return [
@@ -151,7 +190,8 @@ const CustomerProfile: React.FC = () => {
         ];
       case 'currentPassword':
         return [
-          { required: true, message: "Please input your current password!" }
+          { required: true, message: "Please input your current password!" },
+          { validator: checkOldPassword }
         ];
       case 'newPassword':
         return [
@@ -163,6 +203,19 @@ const CustomerProfile: React.FC = () => {
         return [
           { required: true, message: "Please confirm your new password!" },
           confirmPasswordValidator(passwordForm.getFieldValue)
+        ];
+      case 'currentEmail':
+        return [
+          { required: true, type: "email", message: "Please input your current email!" }
+        ];
+      case 'newEmail':
+        return [
+          { required: true, type: "email", message: "Please input a valid new email!" }
+        ];
+      case 'confirmEmail':
+        return [
+          { required: true, type: "email", message: "Please confirm your new email!" },
+          confirmEmailValidator(emailForm.getFieldValue)
         ];
       default:
         return [];
@@ -185,7 +238,18 @@ const CustomerProfile: React.FC = () => {
           <h2 className="ml-4" style={{ fontSize: "24px", fontWeight: "bold" }}>{user.name}</h2>
         </div>
         <Descriptions bordered column={1} layout="vertical" style={{ backgroundColor: "#f9f9f9", borderRadius: "10px", padding: "20px", border: "1px solid #f0f0f0" }}>
-          <Descriptions.Item label="Email" style={{ fontSize: "16px", fontWeight: "500", marginBottom: "10px" }}>{user.email}</Descriptions.Item>
+          <Descriptions.Item label="Email" style={{ fontSize: "16px", fontWeight: "500", marginBottom: "10px" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{user.email}</span>
+              <Button
+                type="link"
+                icon={<EditOutlined />}
+                onClick={() => setIsEmailModalVisible(true)}
+              >
+                Change Email
+              </Button>
+            </div>
+          </Descriptions.Item>
           <Descriptions.Item label="Role" style={{ fontSize: "16px", fontWeight: "500", marginBottom: "10px" }}>{user.role}</Descriptions.Item>
         </Descriptions>
 
@@ -203,6 +267,7 @@ const CustomerProfile: React.FC = () => {
               type="primary"
               style={{ padding: "8px 16px", borderRadius: "8px" }}
               onClick={handleEdit}
+              icon={<EditOutlined />}
             >
               Edit Profile
             </Button>
@@ -210,6 +275,7 @@ const CustomerProfile: React.FC = () => {
               type="default"
               style={{ padding: "8px 16px", borderRadius: "8px" }}
               onClick={() => setIsPasswordModalVisible(true)}
+              icon={<LockOutlined />}
             >
               Change Password
             </Button>
@@ -219,7 +285,7 @@ const CustomerProfile: React.FC = () => {
 
       {/* Edit Profile Modal */}
       <Modal
-        title="Edit Profile"
+        title={<><EditOutlined /> Edit Profile</>}
         open={isModalVisible}
         onOk={handleOk}
         onCancel={() => setIsModalVisible(false)}
@@ -230,22 +296,15 @@ const CustomerProfile: React.FC = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            label="Name"
+            label={<><UserOutlined /> Name</>}
             name="name"
             rules={getValidationRules('name') as Rule[]}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={getValidationRules('email') as Rule[]}
-          >
-            <Input />
+            <Input prefix={<UserOutlined />} />
           </Form.Item>
 
           <Form.Item
-            label="Upload Avatar"
+            label={<><UploadOutlined /> Upload Avatar</>}
             name="avatar"
             rules={getValidationRules('avatar') as Rule[]}
           >
@@ -289,7 +348,7 @@ const CustomerProfile: React.FC = () => {
 
       {/* Change Password Modal */}
       <Modal
-        title="Change Password"
+        title={<> Change Password</>}
         open={isPasswordModalVisible}
         onOk={handlePasswordChange}
         onCancel={() => setIsPasswordModalVisible(false)}
@@ -300,26 +359,92 @@ const CustomerProfile: React.FC = () => {
       >
         <Form form={passwordForm} layout="vertical">
           <Form.Item
-            label="Current Password"
+            label={<>Current Password</>}
             name="currentPassword"
             rules={getValidationRules('currentPassword') as Rule[]}
           >
-            <Input.Password />
+            <Input.Password prefix={<LockOutlined />} />
           </Form.Item>
           <Form.Item
-            label="New Password"
+            label={<>New Password</>}
             name="newPassword"
             rules={getValidationRules('newPassword') as Rule[]}
           >
-            <Input.Password />
+            <Input.Password prefix={<LockOutlined />} />
           </Form.Item>
           <Form.Item
-            label="Confirm New Password"
+            label={<>Confirm New Password</>}
             name="confirmPassword"
             dependencies={["newPassword"]}
             rules={getValidationRules('confirmPassword') as Rule[]}
           >
-            <Input.Password />
+            <Input.Password prefix={<LockOutlined />} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Change Email Modal */}
+      <Modal
+        title={<> Change Email</>}
+        open={isEmailModalVisible}
+        onOk={handleEmailChange}
+        onCancel={() => setIsEmailModalVisible(false)}
+        okText="Save"
+        cancelText="Cancel"
+        centered
+        style={{ padding: "20px" }}
+      >
+        <Form 
+          form={emailForm} 
+          layout="vertical"
+          onValuesChange={(changedValues, allValues) => {
+            if ('newEmail' in changedValues) {
+              const newEmail = changedValues.newEmail;
+              if (newEmail === user.email) {
+                message.error('New email must be different from the current email.');
+                emailForm.setFields([
+                  {
+                    name: 'newEmail',
+                    errors: ['New email must be different from the current email.'],
+                  },
+                ]);
+              } else {
+                checkEmailExists(newEmail).then(exists => {
+                  if (exists) {
+                    message.error('This email is already in use.');
+                    emailForm.setFields([
+                      {
+                        name: 'newEmail',
+                        errors: ['This email is already in use.'],
+                      },
+                    ]);
+                  }
+                });
+              }
+            }
+          }}
+        >
+          <Form.Item
+            label={<>Current Email</>}
+            name="currentEmail"
+            rules={getValidationRules('currentEmail') as Rule[]}
+          >
+            <Input prefix={<MailOutlined />} />
+          </Form.Item>
+          <Form.Item
+            label={<>New Email</>}
+            name="newEmail"
+            rules={getValidationRules('newEmail') as Rule[]}
+          >
+            <Input prefix={<MailOutlined />} />
+          </Form.Item>
+          <Form.Item
+            label={<>Confirm New Email</>}
+            name="confirmEmail"
+            dependencies={["newEmail"]}
+            rules={getValidationRules('confirmEmail') as Rule[]}
+          >
+            <Input prefix={<MailOutlined />} />
           </Form.Item>
         </Form>
       </Modal>

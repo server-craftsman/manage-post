@@ -27,6 +27,10 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ addUser }) => {
       setError('Avatar is required');
       return;
     }
+    if (!name || !email || !password || !role) {
+      setError('All fields are required');
+      return;
+    }
     setLoading(true);
     try {
       const newUser: IUser | null = await createUser({ name, email, password, avatar, role, createDate: new Date(), updateDate: new Date() });
@@ -43,6 +47,7 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ addUser }) => {
       } else {
         setError('Failed to create user');
       }
+    } finally {
       setLoading(false);
     }
   };
@@ -53,11 +58,7 @@ const RegisterUser: React.FC<RegisterUserProps> = ({ addUser }) => {
       message.error('You can only upload image files!');
       return;
     }
-    const isLt2M = info.file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must be smaller than 2MB!');
-      return;
-    }
+    // Remove size limit check
     const reader = new FileReader();
     reader.onloadend = () => {
       setAvatar(reader.result as string); // Set base64 string

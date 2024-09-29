@@ -7,8 +7,10 @@ import {
   TeamOutlined,
   OrderedListOutlined,
   FundOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 const { Sider } = Layout;
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
@@ -16,11 +18,16 @@ import { useNotification } from '../../context/NotificationContext';
 const SidebarAdmin: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { newNotificationsCount } = useNotification();
+  const { newNotificationsCount, resetNewNotificationsCount } = useNotification();
 
   const handleLogout = async () => {
     await logout();
   };
+
+  const handleNotificationClick = useCallback(() => {
+    resetNewNotificationsCount();
+    navigate('/admin/notification');
+  }, [resetNewNotificationsCount, navigate]);
 
   const menuItems = [
     {
@@ -46,7 +53,12 @@ const SidebarAdmin: React.FC = () => {
           <NotificationOutlined style={{ color: '#000000' }} />
         </Badge>
       ),
-      label: <Link to="/admin/notification">Notification</Link>,
+      label: <span onClick={handleNotificationClick}>Notification</span>,
+    },
+    {
+      key: '6',
+      icon: <UserOutlined style={{ color: '#000000' }} />,
+      label: <Link to="/admin/manage-profile">Manage Profile</Link>,
     },
     {
       key: '7',

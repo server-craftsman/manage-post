@@ -20,6 +20,7 @@ const CustomerProfile = lazy(() => import('./components/customer/profile/Custome
 const CreatePost = lazy(() => import('./components/customer/posts/CreatePost'));
 const HistoryPost = lazy(() => import('./components/customer/posts/HistoryPosts'));
 const Notification = lazy(() => import('./components/admin/Notification'));
+const AdminProfile = lazy(() => import('./components/admin/AdminProfile'));
 const App: React.FC = () => {
   const router = createBrowserRouter([
     {
@@ -91,6 +92,10 @@ const App: React.FC = () => {
         {
           path: 'notification',
           element: <Suspense fallback={<div>Loading...</div>}><Notification /></Suspense>
+        },
+        {
+          path: 'manage-profile',
+          element: <Suspense fallback={<div>Loading...</div>}><AdminProfile /></Suspense>
         }
       ],
     },

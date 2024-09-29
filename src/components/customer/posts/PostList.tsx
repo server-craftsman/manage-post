@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Spin, Alert, Row, Col, Typography } from 'antd';
+import { Spin, Alert, Typography, Carousel } from 'antd';
 import { IPost } from '../../../models/Posts';
 import PostType from './PostType';
 import { fetchPosts } from '../../../services/posts';
@@ -39,9 +39,9 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
     loadPosts();
   }, []);
 
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+  // const indexOfLastPost = currentPage * postsPerPage;
+  // const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  // const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -59,21 +59,30 @@ const PostList: React.FC<PostListProps> = ({ posts: initialPosts = [] }) => {
     return <Alert message="Error" description={error} type="error" showIcon style={{ maxWidth: '600px', margin: '40px auto', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }} />;
   }
 
+  const carouselSlides = [];
+  for (let i = 0; i < posts.length; i += 3) {
+    carouselSlides.push(posts.slice(i, i + 3));
+  }
+
   return (
     <div style={{ background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)', minHeight: '100vh', padding: '60px 0' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '50px', backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: '30px', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
         <Title level={1} style={{ fontFamily: 'Playfair Display, serif', textAlign: 'center', marginBottom: '50px', fontSize: '52px', fontWeight: 'bold', color: '#333', textShadow: '2px 2px 4px rgba(0,0,0,0.1)', letterSpacing: '1px' }}>
           Explore Our Exquisite Blog Posts
         </Title>
-        <Row gutter={[32, 32]}>
-          {currentPosts.map(post => (
-            <Col key={post.id} xs={24} sm={24} md={8} lg={8}>
-              <div style={{ height: '570px', marginBottom: '1px' }}> {/* Adjusted height */}
-                <PostType post={post} />
+        <Carousel autoplay>
+          {carouselSlides.map((slide, index) => (
+            <div key={index}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', height: '570px', padding: '0 50px' }}>
+                {slide.map(post => (
+                  <div key={post.id} style={{ width: '30%' }}>
+                    <PostType post={post} />
+                  </div>
+                ))}
               </div>
-            </Col>
+            </div>
           ))}
-        </Row>
+        </Carousel>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
         <PaginationComponent

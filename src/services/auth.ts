@@ -115,3 +115,43 @@ export const checkEmailExists = async (email: string): Promise<boolean> => {
   }
 };
 
+export const checkOldEmail = async (email: string): Promise<boolean> => {
+  try {
+    const response = await axiosInstance.get<IUser[]>(API_URL);
+    const users = response.data;
+    return users.some(user => user.email === email);
+  } catch (error) {
+    throw new Error('Failed to check email');
+  }
+};
+
+export const checkOldPassword = async (password: string): Promise<boolean> => {
+  try {
+    const response = await axiosInstance.get<IUser[]>(API_URL);
+    const users = response.data;
+    return users.some(user => user.password === password);
+  } catch (error) {
+    throw new Error('Failed to check password');
+  }
+};
+
+export const updateUserProfile = async (id: string, userData: Partial<IUser>): Promise<IUser> => {
+  try {
+    // Change PATCH to PUT
+    const response = await axiosInstance.put<IUser>(`${API_URL}/${id}`, userData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+    }
+    throw new Error('Failed to update user profile');
+  }
+};
+
