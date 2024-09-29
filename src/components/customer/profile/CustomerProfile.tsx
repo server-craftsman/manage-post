@@ -397,7 +397,7 @@ const CustomerProfile: React.FC = () => {
         <Form 
           form={emailForm} 
           layout="vertical"
-          onValuesChange={(changedValues, allValues) => {
+          onValuesChange={(changedValues) => {
             if ('newEmail' in changedValues) {
               const newEmail = changedValues.newEmail;
               if (newEmail === user.email) {
