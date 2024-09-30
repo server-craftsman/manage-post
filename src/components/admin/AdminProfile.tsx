@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { IUser } from '../../models/Users';
 import { Form, Input, Upload, Button, Card, Avatar, Typography, message, Modal, Divider } from 'antd';
-import { UserOutlined, MailOutlined, UploadOutlined, LockOutlined, EditOutlined, KeyOutlined } from '@ant-design/icons';
+import { UserOutlined, MailOutlined, UploadOutlined, LockOutlined, EditOutlined, KeyOutlined, CameraOutlined } from '@ant-design/icons';
 import { Rule } from 'antd/es/form';
+import Webcam from 'react-webcam';
 const { Title, Text } = Typography;
 
 const AdminProfile: React.FC = () => {
@@ -15,6 +16,8 @@ const AdminProfile: React.FC = () => {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
+  const [isCameraModalVisible, setIsCameraModalVisible] = useState(false);
+  const webcamRef = useRef<Webcam>(null);
 
   useEffect(() => {
     if (user) {
@@ -116,6 +119,14 @@ const AdminProfile: React.FC = () => {
         setAvatarUrl(e.target?.result as string);
       };
       reader.readAsDataURL(info.file.originFileObj);
+    }
+  };
+
+  const handleCapture = () => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      setAvatarUrl(imageSrc);
+      setIsCameraModalVisible(false);
     }
   };
 
@@ -241,6 +252,7 @@ const AdminProfile: React.FC = () => {
                 </div>
               )}
             </Upload>
+            <Button onClick={() => setIsCameraModalVisible(true)} size="large" icon={<CameraOutlined />}>Use Camera</Button>
           </Form.Item>
           <Form.Item
             name="name"
@@ -279,7 +291,6 @@ const AdminProfile: React.FC = () => {
             <Button onClick={() => setIsPasswordModalVisible(true)} style={{ marginRight: 16 }} size="large" icon={<KeyOutlined />}>
               Change Password
             </Button>
-           
           </div>
         </div>
       )}
@@ -350,6 +361,24 @@ const AdminProfile: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        title={<Title level={4}>Capture Image</Title>}
+        open={isCameraModalVisible}
+        onCancel={() => setIsCameraModalVisible(false)}
+        footer={null}
+        centered
+      >
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          width="100%"
+        />
+        <Button type="primary" onClick={handleCapture} size="large" block>
+          Capture
+        </Button>
       </Modal>
     </Card>
   );

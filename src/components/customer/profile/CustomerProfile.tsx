@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, Descriptions, Avatar, Button, Modal, Form, Input, Upload, message } from "antd";
 import { useAuth } from "../../../context/AuthContext";
 import { IUser } from "../../../models/Users";
-import { UploadOutlined, DeleteOutlined, EditOutlined, UserOutlined, MailOutlined, LockOutlined, HomeOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined, EditOutlined, UserOutlined, MailOutlined, LockOutlined, HomeOutlined, CameraOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import { Rule } from 'antd/es/form';
-
+import Webcam from "react-webcam";
 const CustomerProfile: React.FC = () => {
   const { user, updateUser, checkEmailExists, checkOldEmail, checkOldPassword } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const [isEmailModalVisible, setIsEmailModalVisible] = useState(false);
+  const [isCameraModalVisible, setIsCameraModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [emailForm] = Form.useForm();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
   const navigate = useNavigate();
+  const webcamRef = useRef<Webcam>(null);
 
   useEffect(() => {
     if (isModalVisible && user && user.avatar) {
@@ -170,6 +172,19 @@ const CustomerProfile: React.FC = () => {
       return;
     }
     setAvatarFile(info.file);
+  };
+
+  const capture = () => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      fetch(imageSrc)
+        .then(res => res.blob())
+        .then(blob => {
+          const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+          setAvatarFile(file);
+          setIsCameraModalVisible(false);
+        });
+    }
   };
 
   const getValidationRules = (field: string) => {
@@ -343,6 +358,14 @@ const CustomerProfile: React.FC = () => {
               )}
             </div>
           </Form.Item>
+          <Button
+            type="default"
+            style={{ marginTop: '10px' }}
+            onClick={() => setIsCameraModalVisible(true)}
+            icon={<CameraOutlined />}
+          >
+            Use Camera
+          </Button>
         </Form>
       </Modal>
 
@@ -447,6 +470,25 @@ const CustomerProfile: React.FC = () => {
             <Input prefix={<MailOutlined />} />
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Camera Modal */}
+      <Modal
+        title={<> Capture Avatar</>}
+        open={isCameraModalVisible}
+        onOk={capture}
+        onCancel={() => setIsCameraModalVisible(false)}
+        okText="Capture"
+        cancelText="Cancel"
+        centered
+        style={{ padding: "20px" }}
+      >
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          width="100%"
+        />
       </Modal>
     </div>
   );
