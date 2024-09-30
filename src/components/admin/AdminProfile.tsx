@@ -5,6 +5,7 @@ import { Form, Input, Upload, Button, Card, Avatar, Typography, message, Modal, 
 import { UserOutlined, MailOutlined, UploadOutlined, LockOutlined, EditOutlined, KeyOutlined, CameraOutlined } from '@ant-design/icons';
 import { Rule } from 'antd/es/form';
 import Webcam from 'react-webcam';
+import type { RcFile } from 'antd/es/upload/interface';
 const { Title, Text } = Typography;
 
 const AdminProfile: React.FC = () => {
@@ -113,13 +114,24 @@ const AdminProfile: React.FC = () => {
   };
 
   const handleAvatarChange = (info: any) => {
-    if (info.file.status === 'done') {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarUrl(e.target?.result as string);
-      };
-      reader.readAsDataURL(info.file.originFileObj);
+    const file = info.file.originFileObj;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setAvatarUrl(reader.result as string);
+    };
+  };
+
+  const beforeUpload = (file: RcFile) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/gif' || file.type === 'image/';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
     }
+    const isLt2M = file.size / 1024 / 1024 < 1024;
+    if (!isLt2M) {
+      message.error('Image must smaller than 1024MB!');
+    }
+    return isJpgOrPng && isLt2M;
   };
 
   const handleCapture = () => {
@@ -234,6 +246,7 @@ const AdminProfile: React.FC = () => {
                   listType="picture-circle"
                   className="avatar-uploader"
                   showUploadList={false}
+                  beforeUpload={beforeUpload}
                   onChange={handleAvatarChange}
                 >
                   {avatarUrl ? (
