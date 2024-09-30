@@ -224,76 +224,78 @@ const AdminProfile: React.FC = () => {
       }}
     >
       <Title level={2} style={{ textAlign: 'center', marginBottom: 30, color: '#1890ff' }}>Admin Profile</Title>
-      {isEditing ? (
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Form.Item name="avatar" style={{ textAlign: 'center' }}>
-            <Upload
-              name="avatar"
-              listType="picture-circle"
-              className="avatar-uploader"
-              showUploadList={false}
-              onChange={handleAvatarChange}
-            >
-              {avatarUrl ? (
-                <Avatar src={avatarUrl} size={102} />
-              ) : (
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '50%',
-                  border: '1px dashed #d9d9d9'
-                }}>
-                  <UploadOutlined style={{ fontSize: '24px' }} />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              )}
-            </Upload>
-            <Button onClick={() => setIsCameraModalVisible(true)} size="large" icon={<CameraOutlined />}>Use Camera</Button>
-          </Form.Item>
-          <Form.Item
-            name="name"
-            rules={validateName as Rule[]}
-          >
-            <Input prefix={<UserOutlined />} placeholder="Name" size="large" />
-          </Form.Item>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <Form.Item
-              name="email"
-              rules={validateEmail as Rule[]}
-              style={{ flex: 1, marginRight: '16px', marginBottom: 0 }}
-            >
-              <Input prefix={<MailOutlined />} placeholder="Email" size="large" readOnly />
+      <Form form={form} onFinish={handleSubmit} layout="vertical">
+        {isEditing ? (
+          <>
+            <Form.Item name="avatar" style={{ textAlign: 'center' }}>
+              <Upload
+                name="avatar"
+                listType="picture-circle"
+                className="avatar-uploader"
+                showUploadList={false}
+                onChange={handleAvatarChange}
+              >
+                {avatarUrl ? (
+                  <Avatar src={avatarUrl} size={102} />
+                ) : (
+                  <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    border: '1px dashed #d9d9d9'
+                  }}>
+                    <UploadOutlined style={{ fontSize: '24px' }} />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
+              <Button onClick={() => setIsCameraModalVisible(true)} size="large" icon={<CameraOutlined />}>Use Camera</Button>
             </Form.Item>
-            <Button onClick={() => setIsEmailModalVisible(true)} size="large" icon={<MailOutlined />}>Change Email</Button>
-          </div>
+            <Form.Item
+              name="name"
+              rules={validateName as Rule[]}
+            >
+              <Input prefix={<UserOutlined />} placeholder="Name" size="large" />
+            </Form.Item>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <Form.Item
+                name="email"
+                rules={validateEmail as Rule[]}
+                style={{ flex: 1, marginRight: '16px', marginBottom: 0 }}
+              >
+                <Input prefix={<MailOutlined />} placeholder="Email" size="large" readOnly />
+              </Form.Item>
+              <Button onClick={() => setIsEmailModalVisible(true)} size="large" icon={<MailOutlined />}>Change Email</Button>
+            </div>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" size="large" style={{ marginRight: 8 }}>
-              Save Changes
-            </Button>
-            <Button onClick={() => setIsEditing(false)} size="large" style={{ marginRight: 8 }}>Cancel</Button>
-          </Form.Item>
-        </Form>
-      ) : (
-        <div style={{ textAlign: 'center' }}>
-          <Avatar src={user.avatar} size={150} icon={<UserOutlined />} style={{ marginBottom: 20, boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }} />
-          <Title level={3} style={{ marginBottom: 5 }}>{user.name}</Title>
-          <Text type="secondary" style={{ fontSize: '16px' }}>{user.email}</Text>
-          <Divider style={{ margin: '20px 0' }} />
-          <div style={{ marginTop: 30 }}>
-            <Button type="primary" onClick={() => setIsEditing(true)} style={{ marginRight: 16 }} size="large" icon={<EditOutlined />}>
-              Edit Profile
-            </Button>
-            <Button onClick={() => setIsPasswordModalVisible(true)} style={{ marginRight: 16 }} size="large" icon={<KeyOutlined />}>
-              Change Password
-            </Button>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" size="large" style={{ marginRight: 8 }}>
+                Save Changes
+              </Button>
+              <Button onClick={() => setIsEditing(false)} size="large" style={{ marginRight: 8 }}>Cancel</Button>
+            </Form.Item>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <Avatar src={user.avatar} size={150} icon={<UserOutlined />} style={{ marginBottom: 20, boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }} />
+            <Title level={3} style={{ marginBottom: 5 }}>{user.name}</Title>
+            <Text type="secondary" style={{ fontSize: '16px' }}>{user.email}</Text>
+            <Divider style={{ margin: '20px 0' }} />
+            <div style={{ marginTop: 30 }}>
+              <Button type="primary" onClick={() => setIsEditing(true)} style={{ marginRight: 16 }} size="large" icon={<EditOutlined />}>
+                Edit Profile
+              </Button>
+              <Button onClick={() => setIsPasswordModalVisible(true)} style={{ marginRight: 16 }} size="large" icon={<KeyOutlined />}>
+                Change Password
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Form>
 
       <Modal
         title={<Title level={4}>Change Password</Title>}
