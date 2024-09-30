@@ -228,32 +228,34 @@ const AdminProfile: React.FC = () => {
         {isEditing ? (
           <>
             <Form.Item name="avatar" style={{ textAlign: 'center' }}>
-              <Upload
-                name="avatar"
-                listType="picture-circle"
-                className="avatar-uploader"
-                showUploadList={false}
-                onChange={handleAvatarChange}
-              >
-                {avatarUrl ? (
-                  <Avatar src={avatarUrl} size={102} />
-                ) : (
-                  <div style={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: '50%',
-                    border: '1px dashed #d9d9d9'
-                  }}>
-                    <UploadOutlined style={{ fontSize: '24px' }} />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
-                )}
-              </Upload>
-              <Button onClick={() => setIsCameraModalVisible(true)} size="large" icon={<CameraOutlined />}>Use Camera</Button>
+              <div>
+                <Upload
+                  name="avatar"
+                  listType="picture-circle"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  onChange={handleAvatarChange}
+                >
+                  {avatarUrl ? (
+                    <Avatar src={avatarUrl} size={102} />
+                  ) : (
+                    <div style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '50%',
+                      border: '1px dashed #d9d9d9'
+                    }}>
+                      <UploadOutlined style={{ fontSize: '24px' }} />
+                      <div style={{ marginTop: 8 }}>Upload</div>
+                    </div>
+                  )}
+                </Upload>
+                <Button onClick={() => setIsCameraModalVisible(true)} size="large" icon={<CameraOutlined />}>Use Camera</Button>
+              </div>
             </Form.Item>
             <Form.Item
               name="name"
@@ -261,16 +263,18 @@ const AdminProfile: React.FC = () => {
             >
               <Input prefix={<UserOutlined />} placeholder="Name" size="large" />
             </Form.Item>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <Form.Item
-                name="email"
-                rules={validateEmail as Rule[]}
-                style={{ flex: 1, marginRight: '16px', marginBottom: 0 }}
-              >
-                <Input prefix={<MailOutlined />} placeholder="Email" size="large" readOnly />
-              </Form.Item>
-              <Button onClick={() => setIsEmailModalVisible(true)} size="large" icon={<MailOutlined />}>Change Email</Button>
-            </div>
+            <Form.Item>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Form.Item
+                  name="email"
+                  rules={validateEmail as Rule[]}
+                  style={{ flex: 1, marginRight: '16px', marginBottom: 0 }}
+                >
+                  <Input prefix={<MailOutlined />} placeholder="Email" size="large" readOnly />
+                </Form.Item>
+                <Button onClick={() => setIsEmailModalVisible(true)} size="large" icon={<MailOutlined />}>Change Email</Button>
+              </div>
+            </Form.Item>
 
             <Form.Item>
               <Button type="primary" htmlType="submit" size="large" style={{ marginRight: 8 }}>
