@@ -2,6 +2,11 @@ import { Input, Row, Col, Radio, DatePicker, message } from "antd";
 import { SearchOutlined } from '@ant-design/icons';
 import { motion } from "framer-motion";
 import dayjs, { Dayjs } from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 const { Group: RadioGroup, Button: RadioButton } = Radio;
 
@@ -39,7 +44,7 @@ const SearchUser = ({
       return;
     }
 
-    if (date && date.isBefore(selectedStartDate, 'day')) {
+    if (date && date.isBefore(selectedStartDate)) {
       message.warning('End Date should be greater than or equal to Start Date');
       setSelectedEndDate(null);
     } else {
@@ -57,7 +62,7 @@ const SearchUser = ({
   };
 
   const disableStartDate = (date: Dayjs) => {
-    return date.isBefore(hundredYearsAgo, 'day');
+    return date.isBefore(hundredYearsAgo);
   };
 
   return (
